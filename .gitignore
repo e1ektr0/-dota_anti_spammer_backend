@@ -42,6 +42,8 @@ msbuild.wrn
 .vs/
 # Node artifact files
 node_modules/
+bin/
+obj/
 dist/
 
 # Compiled Java class files
