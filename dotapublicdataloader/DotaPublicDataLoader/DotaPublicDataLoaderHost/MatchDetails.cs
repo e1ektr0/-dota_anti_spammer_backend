@@ -27,5 +27,6 @@ namespace DotaPublicDataLoaderHost
     public class MatchDetailsMongo : MatchDetails
     {
         public ObjectId _id { get; set; }
+        public bool private_data_loaded { get; set; }
     }
 }

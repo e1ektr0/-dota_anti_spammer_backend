@@ -11,6 +11,7 @@
   "dependencies": {
     "dota2-with-proxy": "^7.0.22",
     "express": "^4.17.1",
+    "mongodb": "^3.6.2",
     "net": "^1.0.2",
     "socks": "^2.4.4"
   }
