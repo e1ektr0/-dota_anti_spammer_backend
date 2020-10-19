@@ -22,11 +22,14 @@ namespace DotaPublicDataLoaderHost
         public Byte game_mode { get; set; }
         public Int16 radiant_score { get; set; }
         public Int16 dire_score { get; set; }
+        public Int16 cluster { get; set; }
+
+        public List<PickBan> picks_bans { get; set; }
+        public bool private_data_loaded { get; set; }
     }
 
     public class MatchDetailsMongo : MatchDetails
     {
         public ObjectId _id { get; set; }
-        public bool private_data_loaded { get; set; }
     }
 }
