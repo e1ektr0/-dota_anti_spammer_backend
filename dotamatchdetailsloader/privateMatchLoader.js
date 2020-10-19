@@ -19,6 +19,7 @@ module.exports = function(account){
     if (fs.existsSync('servers')) {
         steam.servers = JSON.parse(fs.readFileSync('servers'));
     }
+    let resolver;
 
     /* Steam logic */
     var onSteamLogOn = function onSteamLogOn(logonResp) {
@@ -35,9 +36,15 @@ module.exports = function(account){
             });
         },
         onSteamLogOff = function onSteamLogOff(eresult) {
+            if(resolver){
+                resolver('login fail');
+            }
             util.log("Logged off from Steam.");
         },
         onSteamError = function onSteamError(error) {
+            if(resolver){
+                resolver('login fail');
+            }
             util.log("Connection closed by server: "+error);
         };
 
@@ -69,15 +76,17 @@ module.exports = function(account){
 
     const options = {
         proxy: {
-        host: '181.4.73.187', // ipv4 or ipv6 or hostname174.77.111.197:41455
-        port: 1080,
-        type: 5 // Proxy version (4 or 5)
+            host: account.proxy.host, // ipv4 or ipv6 or hostname174.77.111.197:41455
+            port: parseInt(account.proxy.port),
+            type: 5 // Proxy version (4 or 5)
         },
     
         command: 'connect', // SOCKS command (createConnection factory function only supports the connect command)
     
         destination: server
     };
+    console.log(options)
+
     console.log("connect to proxy")
     const SocksClient = require('socks').SocksClient;
     SocksClient.createConnection(options, (err, info) => {
@@ -99,10 +108,9 @@ module.exports = function(account){
             steamClient.on('servers', onSteamServers);
         }
     });
-    // myFunction wraps the above API call into a Promise
-    // and handles the callbacks with resolve and reject
     return new Promise((resolve, reject) => {
             var done = false;
+            resolver = resolve;
             setTimeout(() => {
                 if(!done)
                 {

@@ -18,6 +18,7 @@ namespace DotaPublicDataLoaderHost
         public UInt16 item_5 { get; set; }
         public Byte kills { get; set; }
         public Byte deaths { get; set; }
+        public Byte hero_pick_order { get; set; }
         public Byte assists { get; set; }
         public Byte leaver_status { get; set; }
         public UInt16 last_hits { get; set; }

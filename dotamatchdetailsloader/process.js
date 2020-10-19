@@ -1,100 +1,84 @@
-async function getDb(){
-    const MongoClient = require("mongodb").MongoClient;
-    const mongoClient = new MongoClient("mongodb+srv://e1ektr0:Tn7O5zyFdgZ0t3nP@cluster0.ncrvw.gcp.mongodb.net/dota2?retryWrites=true&w=majority", { useUnifiedTopology: true });
-    var connection = await mongoClient.connect();
-    return connection.db("dota2");
-}
+let accountRepositry;
+let matchRepository;
+let db;
+const requestLimit = 100;
+
 async function start(){
-    await insertAccounts();
-    var requestLimit = 100;
-    const db = await getDb();
-    const accountsCollection = db.collection("accounts");
-    var accounts = await accountsCollection.find().toArray();
+    db = await require("./db")();
+    accountRepositry = await require("./repositories/accounts_repository")();
+    matchRepository = await require("./repositories/match_repository")();
 
-    const collection = db.collection("matches");
-    var mysort = { match_seq_num: 1 };  
+    await accountRepositry.insertAccounts();
+
+    var accounts = await accountRepositry.getAll();
     for (let index = 0; index < accounts.length; index++) {
-        const account = accounts[accounts.length-index-1];
+        const account = accounts[index];
+        await connectAndLoad(account);
+    }
+}
 
-        if(accounts.requestCount>=requestLimit){
-            if(Math.round(+new Date()/1000)- acounts.lastRequestTime>86400){
-                accounts.requestCount = 0;
-                await accountsCollection.updateOne({_id: account._id}, {set:{
-                    requestCount: 0,
-                    lastRequestTime:Math.round(+new Date()/1000)
-                }});
-            }
-            else{
-                continue;
-            }
+async function connectAndLoad(account){
+    if(account.requestCount>=requestLimit){
+        if(Math.round(+new Date()/1000)- acounts.lastRequestTime>86400){
+            account.requestCount = 0;
+            await accountRepositry.update(account);
         }
+        else {
+            return;
+        }
+    }
+    if(account.failLogin)
+        return;
 
-        account.steam_name = account.steam_user;
-        var loader = await require("./privateMatchLoader.js")(account);
-        console.log("loader created")
-        if(loader == null)
-        {
-            console.log("loader fail");
-            continue;
+    account.steam_name = account.steam_user;
+    if(!account.proxy){
+        if(!await accountRepositry.updateProxy(account)){
+            console.log('no proxy for this acc')
+            return;
         }
-        while(true){
-            var array = await (collection.find({ private_data_loaded: {$ne: true} }).sort(mysort).limit(1).toArray()); 
-            if(array.length>0) {
-                var dbMatch = array[0];
-                
-                var match = await load(loader, dbMatch.match_id);
-                if(match == null){
-                    match = await load(loader, dbMatch.match_id);
-                    if(match == null)
-                        break;
+    }
+    console.log(account)
+    var loader = await require("./privateMatchLoader.js")(account);
+    console.log("loader created")
+    if(loader == 'login fail')
+    {
+        await accountRepositry.updateFailLogin(account);
+        return;
+    }
+    if(loader == null)
+    {
+        await accountRepositry.updateProxy(account);
+        console.log("loader fail");
+        return;
+    }
+
+    await loadMatches(account,loader);
+}
+
+async function loadMatches(account,loader){
+    while(true) {
+        var matches = await matchRepository.getNotProcessed()
+        if(matches.length > 0) {
+            var dbMatch = matches[0];
+            var match = await load(loader, dbMatch.match_id);
+            if(match == null) {
+                match = await load(loader, dbMatch.match_id);
+                if(match == null)
+                {
+                    break;
                 }
-                account.requestCount = account.requestCount|0+1;
-                await accountsCollection.updateOne({_id: account._id}, {set:{
-                    requestCount: account.requestCount,
-                    lastRequestTime:Math.round(+new Date()/1000)
-                }});
-                if(account.requestCount>requestLimit)
-                    break;  
-                var setObject = {
-                    private_data_loaded: true
-                };
-                for (let index = 0; index < match.players.length; index++) {
-                    if(dbMatch.players[index].account_id == 4294967295){
-                        setObject['players.'+index+'.account_id']=  match.players[index].account_id;
-                    }
-                    setObject['players.'+index+'.hero_pick_order']=  match.players[index].hero_pick_order;
-                }
-                match.match_id = dbMatch.match_id;
-                await collection.updateOne({_id: array[0]._id}, { $set : setObject })
-                console.log('done')
             }
-            console.log('complete')
+            account.requestCount = account.requestCount|0+1;
+            await accountRepositry.update(account);
+            if(account.requestCount > requestLimit)
+                break;  
+
+            matchRepository.update(match, dbMatch);
+            console.log('match loaded')
         }
     }
 }
-async function insertAccounts(){
-    console.log("start account loads")
 
-    const db = await getDb();
-    const accountsCollection = db.collection("accounts");
-    var accounts = await accountsCollection.find().toArray();
-
-    const fs = require('fs')
-    var data = await fs.readFileSync('raw_accounts.txt', 'utf8')
-    var dataArray = data.split(/\r?\n/); 
-    for (let index = 0; index < dataArray.length; index++) {
-        const row = dataArray[index];
-        var info = row.split(':');
-       if( !accounts.some(n=>n.steam_user == info[0])){
-            await accountsCollection.insertOne({
-                steam_user: info[0],
-                steam_pass: info[1]
-            });
-            console.log("inset "+row)
-       }
-    }
-    console.log("complete account loads")
-}
 async function load(loader, matchId){
     return new Promise((resolve, reject) => {
         var done = false;

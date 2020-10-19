@@ -26,18 +26,20 @@ namespace DotaPublicDataLoaderHost
             if (listCollections.All(n => n["name"] != CollectionName))
             {
                 _database.CreateCollection(CollectionName);
-                //todo: create sorting index
+                var mongoCollection = _database.GetCollection<BsonDocument>(CollectionName);
+                var indexJson = @"{'match_seq_num_1': -1}";
+                mongoCollection.Indexes.CreateOne(new CreateIndexModel<BsonDocument>(new JsonIndexKeysDefinition<BsonDocument>(indexJson)));
             }
         }
 
-        public ulong GetLastSeq()
+        public ulong? GetLastSeq()
         {
             var collection = GetCollection();
             var firstOrDefault = collection.Find(new BsonDocument())
                 .Sort(Builders<BsonDocument>.Sort.Descending("match_seq_num"))
                 .FirstOrDefault();
-            if (firstOrDefault == null) 
-                return 4756161920;
+            if (firstOrDefault == null)     
+                return null;
             var json = firstOrDefault.ToJson();
             var matchDetails = BsonSerializer.Deserialize<MatchDetailsMongo>(firstOrDefault);
             return matchDetails.match_seq_num;
