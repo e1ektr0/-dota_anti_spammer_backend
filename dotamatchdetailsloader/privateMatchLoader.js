@@ -1,4 +1,4 @@
-module.exports = function(){
+module.exports = function(account){
     var loader = {
 
     }
@@ -13,11 +13,11 @@ module.exports = function(){
         Dota2 = new dota2.Dota2Client(steamClient, true);
     loader.Dota2 = Dota2;
     // Load config
-    global.config = require("./config");
-
+    global.config = account;
+    console.log(account)
     // Load in server list if we've saved one before
     if (fs.existsSync('servers')) {
-    steam.servers = JSON.parse(fs.readFileSync('servers'));
+        steam.servers = JSON.parse(fs.readFileSync('servers'));
     }
 
     /* Steam logic */
@@ -25,13 +25,6 @@ module.exports = function(){
             if (logonResp.eresult == steam.EResult.OK) {
                 util.log("Logged on.");
                 Dota2.launch();
-                // Dota2.on("ready", function() {
-                //     console.log("Node-dota2 ready.");                
-                //     Dota2.requestMatchDetails(matchId, function(err, body) {
-                //         if (err) throw err;
-                //         matchDataProcessor(body);
-                //     });
-                // });
             }
         },
         onSteamServers = function onSteamServers(servers) {
@@ -50,8 +43,7 @@ module.exports = function(){
 
     steamUser.on('updateMachineAuth', function(sentry, callback) {
         var hashedSentry = crypto.createHash('sha1').update(sentry.bytes).digest();
-        fs.writeFileSync('sentry', hashedSentry)
-        util.log("sentryfile saved");
+        loader.sentry = hashedSentry;
         callback({
             sha_file: hashedSentry
         });
@@ -67,7 +59,7 @@ module.exports = function(){
     if (global.config.two_factor_code) logOnDetails.two_factor_code = global.config.two_factor_code;
 
     try {
-        var sentry = fs.readFileSync('sentry');
+        var sentry = account.sentry|'';
         if (sentry.length) logOnDetails.sha_sentryfile = sentry;
     } catch (beef) {
         util.log("Cannae load the sentry. " + beef);
@@ -77,8 +69,8 @@ module.exports = function(){
 
     const options = {
         proxy: {
-        host: '98.185.94.76', // ipv4 or ipv6 or hostname
-        port: 4145,
+        host: '181.4.73.187', // ipv4 or ipv6 or hostname174.77.111.197:41455
+        port: 1080,
         type: 5 // Proxy version (4 or 5)
         },
     
@@ -93,7 +85,9 @@ module.exports = function(){
             console.log(err);
         else {
             console.log("connected to proxy")
-
+            if(!info.socket){
+                console.log("no socket")
+            }
             // Connection has been established, we can start sending data now: 
             steamClient.connect( {customSocket : info.socket});
             steamClient.on('connected', function() {
@@ -108,7 +102,16 @@ module.exports = function(){
     // myFunction wraps the above API call into a Promise
     // and handles the callbacks with resolve and reject
     return new Promise((resolve, reject) => {
+            var done = false;
+            setTimeout(() => {
+                if(!done)
+                {
+                    console.log("timeout dota2 loading")
+                    resolve(null);
+                }
+            }, 80*1000);
             Dota2.on("ready", function() {
+                done = true;
                 resolve(loader);
             });
         });

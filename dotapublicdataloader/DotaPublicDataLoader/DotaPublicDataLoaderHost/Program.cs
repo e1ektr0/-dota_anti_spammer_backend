@@ -34,6 +34,10 @@ namespace DotaPublicDataLoaderHost
             while (true)
             {
                 var matches = GetMatchesStartingOnSeqNumber(lastSeq + 1);
+
+                var max = matches.Max(n=>n.start_time+(ulong)n.duration) -  matches.Min(n=>n.start_time+(ulong)n.duration);
+                Console.WriteLine(matches.Count);
+                Console.WriteLine(max/60);
                 if (matches.Any())
                     matchesRepository.Insert(matches);
                 lastSeq = matches.Max(n => n.match_seq_num);
