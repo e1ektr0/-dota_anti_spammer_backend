@@ -41,12 +41,10 @@ namespace DotaPublicDataLoaderHost
         //5662200710
         private static void Main()
         {
-            //var b = (int)SupportedClusters[0] / 10 == 131 / 10;
-            Console.WriteLine(uint.MaxValue);
             var preparedClustersId = SupportedClusters.Select(n => (int) n / 10);
             var matchesRepository = new MatchesRepository();
             var lastSeq = matchesRepository.GetLastSeq();
-            int count = 0;
+            var count = 0;
             while (true)
             {
                 lastSeq ??= GetSeq();

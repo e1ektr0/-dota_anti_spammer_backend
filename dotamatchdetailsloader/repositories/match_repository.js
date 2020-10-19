@@ -10,7 +10,6 @@ module.exports = async function(){
                 if(dbMatch.players[index].account_id == 4294967295){
                     setObject['players.'+index+'.account_id']=  match.players[index].account_id;
                 }
-                setObject['players.'+index+'.hero_pick_order']=  match.players[index].hero_pick_order;
             }
             match.match_id = dbMatch.match_id;
             await collection.updateOne({_id: dbMatch._id}, { $set : setObject })
