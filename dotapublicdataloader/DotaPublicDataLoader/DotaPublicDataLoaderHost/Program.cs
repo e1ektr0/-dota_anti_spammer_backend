@@ -39,7 +39,6 @@ namespace DotaPublicDataLoaderHost
         };
 
         private static readonly Dictionary<int, UInt64> Clusters = new Dictionary<int, UInt64>();
-
         //5662200710
         private static void Main()
         {
@@ -58,14 +57,21 @@ namespace DotaPublicDataLoaderHost
                 if (matches.Any())
                 {
                     seq = matches.Max(n => n.match_seq_num);
-                    var matchesBySkill = GetMatches(matches.Max(n => n.match_id - 1));
-                    matches = matches.Where(n => matchesBySkill.Any(u => u.match_id == n.match_id)).ToList();
-                    filteredBySkill = newCount - matches.Count;
+                    // var matchesBySkill = GetMatches(matches.Max(n => n.match_id +1));
+                    // var x = matches.Where(n => matchesBySkill.Any(u => u.match_id == n.match_id)).ToList();
+                    // Console.WriteLine(seq);
+                    // matches = matches.Where(n => matchesBySkill.Any(u => u.match_id == n.match_id)).ToList();
+                    // filteredBySkill = newCount - matches.Count;
+                    // Console.WriteLine(filteredBySkill);
                 }
 
                 matches = matches.Where(n => preparedClustersId.Contains(n.cluster / 10)).ToList();
                 matches = matches.Where(n => n.game_mode == 22).ToList(); //ranked ap
                 matches = matches.Where(n => n.lobby_type == 7).ToList(); //ranked ap
+                // foreach (var match in matches)
+                // {
+                //     var matchDetailses = GetMatch(match.match_id);
+                // }
                 foreach (var match in matches)
                 {
                     match.private_data_loaded = match.players.All(n => n.account_id != uint.MaxValue);
@@ -111,15 +117,27 @@ namespace DotaPublicDataLoaderHost
             }
         }
 
-        private static IList<MatchDetails> GetMatches(ulong? startMatchId = null)
+        private static IList<MatchDetails> GetMatches(ulong? startMatchId = null, byte? skill = null)
         {
             var url =
                 $"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001?key={_key}";
             if (startMatchId != null)
-                url += "&skill=3&game_mode=22&startMatchId" + startMatchId;
+                url += "&start_at_match_id" + startMatchId;
+            if (skill != null)
+                url += "&skill=3";
             var json = new WebClient().DownloadString(url);
             var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
             return matchHistory.result.matches;
+        }
+
+        private static IList<MatchDetails> GetMatch(ulong matchId)
+        {
+            var url =
+                $"https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={matchId}&key={_key}";
+            var json = new WebClient().DownloadString(url);
+        //    var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
+          //  return matchHistory.result.matches;
+          return null;
         }
     }
 }

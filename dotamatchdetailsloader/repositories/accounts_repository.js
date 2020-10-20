@@ -29,7 +29,7 @@ module.exports = async function(){
             }});
         },
         getAll: async function() {
-            return await accountsCollection.find().toArray()
+            return await accountsCollection.find({guarded:{$ne: true}}).toArray()
         },
         updateProxy: async function (account) {
             var accounts = await this.getAll();
@@ -52,11 +52,10 @@ module.exports = async function(){
         updateFailLogin: async function(account){
             account.failLogin = Math.round(+new Date()/1000);
             var set =  {$set:{
-                failLogin: account.failLogin
+                failLogin: account.failLogin,
+                guarded: true
             }};
-            console.log(account._id);
-            console.log(set);
-            await accountsCollection.updateOne({_id: account._id},set);
+            await accountsCollection.updateOne({_id: account._id} ,set);
         }
     }
     obj.accountsCollection = accountsCollection;

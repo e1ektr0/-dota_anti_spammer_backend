@@ -44,6 +44,18 @@ namespace DotaPublicDataLoaderHost
             var matchDetails = BsonSerializer.Deserialize<MatchDetailsMongo>(firstOrDefault);
             return matchDetails.match_seq_num;
         }
+        public MatchDetailsMongo GetLastMatch()
+        {
+            var collection = GetCollection();
+            var firstOrDefault = collection.Find(new BsonDocument())
+                .Sort(Builders<BsonDocument>.Sort.Descending("match_seq_num"))
+                .FirstOrDefault();
+            if (firstOrDefault == null)     
+                return null;
+            var json = firstOrDefault.ToJson();
+            var matchDetails = BsonSerializer.Deserialize<MatchDetailsMongo>(firstOrDefault);
+            return matchDetails;
+        }
 
         public void Insert(IList<MatchDetails> matches)
         {

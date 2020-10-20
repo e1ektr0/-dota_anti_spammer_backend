@@ -15,7 +15,16 @@ module.exports = async function(){
             await collection.updateOne({_id: dbMatch._id}, { $set : setObject })
         },
         getNotProcessed: async function () {
-            return await (collection.find({ private_data_loaded: {$ne: true} }).sort( { match_seq_num: 1 }).limit(1).toArray());
+            return await (collection.find({ private_data_loaded: {$ne: true}, skill_filtered: true }).limit(1).toArray());
+        },
+        getNotFiltered: async function () {
+            return await (collection.find({ skill_filtered: {$ne: true} }).limit(30).toArray());
+        },
+        skillFiltered: async function(matchIds){
+            await collection.updateMany({_id: { $in: matchIds }}, { $set : {skill_filtered:true} })
+        },
+        delete: async function(matchIds){
+            await collection.deleteMany({_id: { $in: matchIds }});
         }
     }
     return obj;

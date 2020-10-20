@@ -1,10 +1,8 @@
 let accountRepositry;
 let matchRepository;
-let db;
 const requestLimit = 100;
 
 async function start(){
-    db = await require("./db")();
     accountRepositry = await require("./repositories/accounts_repository")();
     matchRepository = await require("./repositories/match_repository")();
 
@@ -14,9 +12,32 @@ async function start(){
     for (let index = 0; index < accounts.length; index++) {
         const account = accounts[index];
         await connectAndLoad(account);
+        // if(!account.proxy)
+        //     await checkAccount(account);
     }
 }
 
+async function checkAccount(account) {
+    await assignProxyToAcc(account);
+    var loader = await require("./privateMatchLoader.js")(account);
+    if(loader == 'login fail')
+    {
+        await accountRepositry.updateFailLogin(account);
+        return;
+    }else{
+        if(loader.socket)
+            loader.socket.destroy();
+    }
+}
+
+async function assignProxyToAcc(account){
+    if(!account.proxy){
+        if(!await accountRepositry.updateProxy(account)){
+            console.log('no proxy for this acc')
+            return;
+        }
+    }
+}
 async function connectAndLoad(account){
     if(account.requestCount>=requestLimit){
         if(Math.round(+new Date()/1000)- account.lastRequestTime>86400){
@@ -30,14 +51,7 @@ async function connectAndLoad(account){
     if(account.failLogin)
         return;
 
-    account.steam_name = account.steam_user;
-    if(!account.proxy){
-        if(!await accountRepositry.updateProxy(account)){
-            console.log('no proxy for this acc')
-            return;
-        }
-    }
-    console.log(account)
+    await assignProxyToAcc(account);
     var loader = await require("./privateMatchLoader.js")(account);
     console.log("loader created")
     if(loader == 'login fail')
@@ -68,6 +82,7 @@ async function loadMatches(account,loader){
                     break;
                 }
             }
+            console.log(match);
             account.requestCount = (account.requestCount|0)+1;
             await accountRepositry.update(account);
             if(account.requestCount > requestLimit)
@@ -75,6 +90,8 @@ async function loadMatches(account,loader){
 
             matchRepository.update(match, dbMatch);
             console.log('match loaded')
+        }else{
+            console.log('no matches')
         }
     }
 }
@@ -90,6 +107,7 @@ async function load(loader, matchId){
                 resolve(null);
             }
           }, 20*1000);
+        
         loader.Dota2.requestMatchDetails(matchId, function(err, body) {
             if (err) throw err;
             done = true;

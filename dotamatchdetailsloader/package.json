@@ -9,7 +9,8 @@
   "author": "E1ektr0",
   "license": "ISC",
   "dependencies": {
-    "dota2-with-proxy": "^7.0.22",
+    "dota2": "^7.0.3",
+    "dota2-with-proxy": "^7.0.23",
     "express": "^4.17.1",
     "mongodb": "^3.6.2",
     "net": "^1.0.2",
