@@ -19,7 +19,7 @@ async function start(){
 
 async function connectAndLoad(account){
     if(account.requestCount>=requestLimit){
-        if(Math.round(+new Date()/1000)- acounts.lastRequestTime>86400){
+        if(Math.round(+new Date()/1000)- account.lastRequestTime>86400){
             account.requestCount = 0;
             await accountRepositry.update(account);
         }
@@ -68,7 +68,7 @@ async function loadMatches(account,loader){
                     break;
                 }
             }
-            account.requestCount = account.requestCount|0+1;
+            account.requestCount = (account.requestCount|0)+1;
             await accountRepositry.update(account);
             if(account.requestCount > requestLimit)
                 break;  

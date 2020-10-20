@@ -21,6 +21,8 @@ module.exports = async function(){
             console.log("complete account loads")
         },
         update: async function(account){
+            console.log("update a cc"+account.requestCount)
+            console.log(account)
             await accountsCollection.updateOne({_id: account._id}, {$set:{
                 requestCount: account.requestCount,
                 lastRequestTime:Math.round(+new Date()/1000)
