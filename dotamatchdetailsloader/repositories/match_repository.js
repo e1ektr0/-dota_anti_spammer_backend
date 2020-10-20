@@ -15,7 +15,7 @@ module.exports = async function(){
             await collection.updateOne({_id: dbMatch._id}, { $set : setObject })
         },
         getNotProcessed: async function () {
-            return await (collection.find({ private_data_loaded: {$ne: true}, skill_filtered: true }).limit(1).toArray());
+            return await (collection.find({ private_data_loaded: {$ne: true}}).limit(10).toArray());
         },
         getNotFiltered: async function () {
             return await (collection.find({ skill_filtered: {$ne: true} }).limit(30).toArray());

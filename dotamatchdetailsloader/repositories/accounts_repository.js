@@ -21,8 +21,6 @@ module.exports = async function(){
             console.log("complete account loads")
         },
         update: async function(account){
-            console.log("update a cc"+account.requestCount)
-            console.log(account)
             await accountsCollection.updateOne({_id: account._id}, {$set:{
                 requestCount: account.requestCount,
                 lastRequestTime:Math.round(+new Date()/1000)
@@ -56,6 +54,28 @@ module.exports = async function(){
                 guarded: true
             }};
             await accountsCollection.updateOne({_id: account._id} ,set);
+        },
+        reserve: async function(id){
+            var now =Math.round(+new Date()/1000);
+            var expire = now - 60*1;//1 min
+            var rateLimitExpire = now - 86400;
+            var filter = {$and:
+                [
+                   {guarded:{$ne: true}},
+                   {$or:[{reserve_instance_id: null},{reserve_update_time: { $lt: expire } }, {lastRequestTime:{ $lt: rateLimitExpire } }]}, 
+                   {
+                       $or:[ 
+                           {lastRequestTime: null},
+                           {lastRequestTime:{ $lt: rateLimitExpire }}, 
+                           {requestCount:{ $lt: 101 }}
+                       ]
+                   }
+               ]};
+            return await accountsCollection.findOneAndUpdate( filter,
+                {$set:{
+                    reserve_update_time: now,
+                    reserve_instance_id: id
+            }});
         }
     }
     obj.accountsCollection = accountsCollection;

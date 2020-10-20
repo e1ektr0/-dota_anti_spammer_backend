@@ -1,6 +1,47 @@
 module.exports = function(account){
     var loader = {
+        loadMatch: async function (matchId){
+            return new Promise((resolve, reject) => {
+                var done = false;
+                
+                setTimeout(() => {
+                    if(!done)
+                    {
+                        console.log("timeout match loading")
+                        resolve(null);
+                    }
+                  }, 20*1000);
+                
+                this.Dota2.requestMatchDetails(matchId, function(err, body) {
+                    
+                    if (err) {
+                        console.log(matchId)
+                        console.log(err)
 
+                        throw err;
+                    }
+                    done = true;
+                    resolve(body.match);
+                });
+            });
+        },
+        loadPlayerRank: async function(accountId){
+            return new Promise((resolve, reject) => {
+                var done = false;
+                setTimeout(() => {
+                    if(!done)
+                    {
+                        console.log("timeout account loading")
+                        resolve(null);
+                    }
+                  }, 20*1000);
+                
+                  this.Dota2.requestProfileCard(accountId,function (error, profileData) {
+                    resolve(profileData.rank_tier);
+                    done = true;
+                });
+            });
+        }
     }
     var steam = require("steam-with-proxy"),
         util = require("util"),
