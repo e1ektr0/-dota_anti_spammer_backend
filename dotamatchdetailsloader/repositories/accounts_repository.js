@@ -51,18 +51,19 @@ module.exports = async function(){
             account.failLogin = Math.round(+new Date()/1000);
             var set =  {$set:{
                 failLogin: account.failLogin,
-                guarded: true
+                //guarded: true
             }};
             await accountsCollection.updateOne({_id: account._id} ,set);
         },
         reserve: async function(id){
             var now =Math.round(+new Date()/1000);
+            console.log('set now', now);
             var expire = now - 60*1;//1 min
             var rateLimitExpire = now - 86400;
             var filter = {$and:
                 [
                    {guarded:{$ne: true}},
-                   {$or:[{reserve_instance_id: null},{reserve_update_time: { $lt: expire } }, {lastRequestTime:{ $lt: rateLimitExpire } }]}, 
+                   {$or:[{reserve_instance_id: null},{lastRequestTime: { $lt: expire } }]}, 
                    {
                        $or:[ 
                            {lastRequestTime: null},
@@ -71,11 +72,14 @@ module.exports = async function(){
                        ]
                    }
                ]};
-            return await accountsCollection.findOneAndUpdate( filter,
+            console.log(filter);
+            let result = await accountsCollection.findOneAndUpdate( filter,
                 {$set:{
-                    reserve_update_time: now,
+                    lastRequestTime: now,
                     reserve_instance_id: id
             }});
+            console.log(result);
+            return result;
         }
     }
     obj.accountsCollection = accountsCollection;

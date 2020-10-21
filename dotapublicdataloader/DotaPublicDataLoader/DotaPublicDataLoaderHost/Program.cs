@@ -39,6 +39,7 @@ namespace DotaPublicDataLoaderHost
         };
 
         private static readonly Dictionary<int, UInt64> Clusters = new Dictionary<int, UInt64>();
+
         //5662200710
         private static void Main()
         {
@@ -47,43 +48,40 @@ namespace DotaPublicDataLoaderHost
             var seq = matchesRepository.GetLastSeq();
             var count = 0;
             var startTime = DateTime.UtcNow;
+            seq ??= GetSeq();
+            var iteration = 0;
             while (true)
             {
-                seq ??= GetSeq();
+                if (iteration % 30 == 0)
+                {
+                    Console.WriteLine("GetSeq() - seq:" + (GetSeq() - seq));
+                }
+                iteration++;
                 var matches = GetMatchesStartingOnSeqNumber(seq.Value);
                 var newCount = matches.Count;
                 var filteredBySkill = 0;
-                
+
                 if (matches.Any())
                 {
                     seq = matches.Max(n => n.match_seq_num);
-                    // var matchesBySkill = GetMatches(matches.Max(n => n.match_id +1));
-                    // var x = matches.Where(n => matchesBySkill.Any(u => u.match_id == n.match_id)).ToList();
-                    // Console.WriteLine(seq);
-                    // matches = matches.Where(n => matchesBySkill.Any(u => u.match_id == n.match_id)).ToList();
-                    // filteredBySkill = newCount - matches.Count;
-                    // Console.WriteLine(filteredBySkill);
                 }
 
                 matches = matches.Where(n => preparedClustersId.Contains(n.cluster / 10)).ToList();
                 matches = matches.Where(n => n.game_mode == 22).ToList(); //ranked ap
                 matches = matches.Where(n => n.lobby_type == 7).ToList(); //ranked ap
-                // foreach (var match in matches)
-                // {
-                //     var matchDetailses = GetMatch(match.match_id);
-                // }
-                foreach (var match in matches)
-                {
-                    match.private_data_loaded = match.players.All(n => n.account_id != uint.MaxValue);
-                }
 
-                count += matches.Count(n => !n.private_data_loaded);
-                Thread.Sleep(5000);
+                count += matches.Count();
+                if(newCount == 100)
+                    Thread.Sleep(1000);
+                else
+                    Thread.Sleep(5000);
+
                 if (matches.Any())
                     matchesRepository.Insert(matches);
 
                 Console.WriteLine(
                     $"Total loaded:{count} after {DateTime.UtcNow - startTime}. New matches:{newCount}. Add to queue: {matches.Count} Filtered by skill: {filteredBySkill}");
+              
             }
         }
 
@@ -135,9 +133,9 @@ namespace DotaPublicDataLoaderHost
             var url =
                 $"https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={matchId}&key={_key}";
             var json = new WebClient().DownloadString(url);
-        //    var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
-          //  return matchHistory.result.matches;
-          return null;
+            //    var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
+            //  return matchHistory.result.matches;
+            return null;
         }
     }
 }

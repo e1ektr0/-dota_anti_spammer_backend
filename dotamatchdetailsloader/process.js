@@ -68,14 +68,22 @@ async function assignProxyToAcc(account){
 
 let totalDeleted =0;
 let totalLoaded= 0;
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  } 
 async function loadMatches(account,loader){
     let startTime = Math.round(+new Date()/1000);
     let deleted = 0;
     let loaded = 0;
     while(true) {
+        if(!loader.connected)
+            return;
         var dbMatch = (await matchRepository.getNotProcessed(id)).value;
         if(!dbMatch){
-            console.log('no matches')
+            await sleep(1000);
+            continue;
         }
         var player = dbMatch.players.find(x=>x.account_id != 4294967295);
         if(player){
@@ -95,7 +103,7 @@ async function loadMatches(account,loader){
                 account.requestCount = (account.requestCount|0)+1;
                 await accountRepositry.update(account);
                 if(account.requestCount > requestLimit)
-                    break;  
+                            break;  
                 console.log('match loaded'+dbMatch.match_id)
             } else {
                 await matchRepository.delete(dbMatch._id);
@@ -107,6 +115,7 @@ async function loadMatches(account,loader){
             deleted++;
             totalDeleted++;
         }
+        await accountRepositry.update(account);
         let now = Math.round(+new Date()/1000);
         if(now - startTime > 60){
             startTime = now;

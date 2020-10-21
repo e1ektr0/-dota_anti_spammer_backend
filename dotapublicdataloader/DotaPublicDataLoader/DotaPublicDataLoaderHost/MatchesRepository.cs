@@ -15,7 +15,7 @@ namespace DotaPublicDataLoaderHost
         {
             var client =
                 new MongoClient(
-                    "mongodb+srv://e1ektr0:Tn7O5zyFdgZ0t3nP@cluster0.ncrvw.gcp.mongodb.net/dota2?retryWrites=true&w=majority");
+                    "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false");
             _database = client.GetDatabase("dota2");
             Ini();
         }
