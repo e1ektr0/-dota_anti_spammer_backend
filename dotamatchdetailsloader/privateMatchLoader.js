@@ -54,7 +54,6 @@ module.exports = function(account){
     loader.Dota2 = Dota2;
     // Load config
     global.config = account;
-    console.log(account)
     // Load in server list if we've saved one before
     if (fs.existsSync('servers')) {
         steam.servers = JSON.parse(fs.readFileSync('servers'));

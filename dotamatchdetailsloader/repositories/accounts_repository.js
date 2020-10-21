@@ -67,7 +67,7 @@ module.exports = async function(){
                        $or:[ 
                            {lastRequestTime: null},
                            {lastRequestTime:{ $lt: rateLimitExpire }}, 
-                           {requestCount:{ $lt: 101 }}
+                           {requestCount:{ $lt: 94 }}
                        ]
                    }
                ]};

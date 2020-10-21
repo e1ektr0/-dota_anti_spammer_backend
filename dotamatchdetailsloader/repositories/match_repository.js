@@ -14,8 +14,23 @@ module.exports = async function(){
             match.match_id = dbMatch.match_id;
             await collection.updateOne({_id: dbMatch._id}, { $set : setObject })
         },
-        getNotProcessed: async function () {
-            return await (collection.find({ private_data_loaded: {$ne: true}}).limit(10).toArray());
+        getNotProcessed: async function (id) {
+            var now =Math.round(+new Date()/1000);
+            var expire = now - 60*1*10;//10 min
+            var filter= { 
+                $and:[
+                    {private_data_loaded: {$ne: true}},
+                    {$or:[{reserve_instance_id: null},{reserve_update_time: { $lt: expire } }]}
+                ]
+
+            };
+            return await (collection.findOneAndUpdate(filter,
+                {
+                    $set:{
+                        reserve_update_time: now,
+                        reserve_instance_id: id
+                    }
+                }));
         },
         getNotFiltered: async function () {
             return await (collection.find({ skill_filtered: {$ne: true} }).limit(30).toArray());
@@ -23,8 +38,8 @@ module.exports = async function(){
         skillFiltered: async function(matchIds){
             await collection.updateMany({_id: { $in: matchIds }}, { $set : {skill_filtered:true} })
         },
-        delete: async function(matchIds){
-            await collection.deleteMany({_id: { $in: matchIds }});
+        delete: async function(matchId){
+            await collection.deleteMany({_id: matchId});
         }
     }
     return obj;
