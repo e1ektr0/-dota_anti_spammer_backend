@@ -35,8 +35,6 @@ async function createLoader(account){
             return;
         }
     }
-    if(account.failLogin)
-        return;
 
     await assignProxyToAcc(account);
     var loader = await require("./privateMatchLoader.js")(account);

@@ -17,13 +17,7 @@ module.exports = async function(){
         getNotProcessed: async function (id) {
             var now =Math.round(+new Date()/1000);
             var expire = now - 60*1*10;//10 min
-            var filter= { 
-                $and:[
-                    {private_data_loaded: {$ne: true}},
-                    {$or:[{reserve_instance_id: null},{reserve_update_time: { $lt: expire } }]}
-                ]
-
-            };
+            var filter=   {$or:[{reserve_instance_id: null},{reserve_update_time: { $lt: expire } }]};
             return await (collection.findOneAndUpdate(filter,
                 {
                     $set:{
@@ -31,12 +25,6 @@ module.exports = async function(){
                         reserve_instance_id: id
                     }
                 }));
-        },
-        getNotFiltered: async function () {
-            return await (collection.find({ skill_filtered: {$ne: true} }).limit(30).toArray());
-        },
-        skillFiltered: async function(matchIds){
-            await collection.updateMany({_id: { $in: matchIds }}, { $set : {skill_filtered:true} })
         },
         delete: async function(matchId){
             await collection.deleteMany({_id: matchId});

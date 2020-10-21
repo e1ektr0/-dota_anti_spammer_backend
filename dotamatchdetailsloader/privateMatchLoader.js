@@ -66,6 +66,7 @@ module.exports = function(account){
                 util.log("Logged on.");
                 Dota2.launch();
             }
+            loader.connected = true;
         },
         onSteamServers = function onSteamServers(servers) {
             util.log("Received servers.");
@@ -78,12 +79,14 @@ module.exports = function(account){
             if(resolver){
                 resolver('login fail');
             }
+            loader.connected = false;
             util.log("Logged off from Steam.");
         },
         onSteamError = function onSteamError(error) {
             if(resolver){
                 resolver('login fail');
             }
+            loader.connected = false;
             util.log("Connection closed by server: "+error);
         };
 
@@ -160,12 +163,6 @@ module.exports = function(account){
             }, 80*1000);
             Dota2.on("ready", function() {
                 done = true;
-                // Dota2.requestProfileCard(72890132);
-                // Dota2.on("profileCardData", function (accountId, profileData) {
-                //     console.log(JSON.stringify(profileData, null, 2));
-                // });
-              
-               
                 resolve(loader);
             });
         });

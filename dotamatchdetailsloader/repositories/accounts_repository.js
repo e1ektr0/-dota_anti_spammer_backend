@@ -51,7 +51,7 @@ module.exports = async function(){
             account.failLogin = Math.round(+new Date()/1000);
             var set =  {$set:{
                 failLogin: account.failLogin,
-                //guarded: true
+                guarded: true
             }};
             await accountsCollection.updateOne({_id: account._id} ,set);
         },
@@ -72,13 +72,11 @@ module.exports = async function(){
                        ]
                    }
                ]};
-            console.log(filter);
             let result = await accountsCollection.findOneAndUpdate( filter,
                 {$set:{
                     lastRequestTime: now,
                     reserve_instance_id: id
             }});
-            console.log(result);
             return result;
         }
     }
