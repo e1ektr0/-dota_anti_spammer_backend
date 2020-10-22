@@ -8,7 +8,7 @@ module.exports = async function(user, password, markSeen){
         host: 'imap.rambler.ru',
             port: 993,
             tls: true,
-            authTimeout: 3000
+            authTimeout: 60000
         }
     };
     var connection = await imaps.connect(config);

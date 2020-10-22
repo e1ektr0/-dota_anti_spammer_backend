@@ -49,7 +49,6 @@ module.exports = async function (account, sentryCallBack) {
         steamClient = new steam.SteamClient(),
         steamUser = new steam.SteamUser(steamClient),
         Dota2 = new dota2.Dota2Client(steamClient, false);
-    await require('./rambler')(account.email, account.email_pass, true);
     loader.Dota2 = Dota2;
     // Load config
     global.config = account;
@@ -68,7 +67,7 @@ module.exports = async function (account, sentryCallBack) {
         }
         else {
             sleep(5000).then(() => {
-                require('./rambler')(account.email, account.email_pass, true).then(code => {
+                require("./rambler_pop3")(account.email, account.email_pass).then(code => {
                     logOnDetails.auth_code = code;
                     if (code) {
                         retry = true;
@@ -163,7 +162,7 @@ module.exports = async function (account, sentryCallBack) {
                 console.log("timeout dota2 loading")
                 resolve(null);
             }
-        }, 80 * 1000);
+        }, 60 * 1000);
         Dota2.on("ready", function () {
             done = true;
             resolve(loader);
