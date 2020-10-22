@@ -10,10 +10,11 @@ module.exports = async function(){
     
     const collection = db.collection("results");
     var obj = {
-        add: async function(match,dbMatch){
+        add: async function(match,dbMatch, loader){
             var bans = match.picks_bans.filter(x=>!x.is_pick).map(x=>x.hero_id)
             var results = match.players.map(p=>({
                 account_id: p.account_id,
+                steam_id: loader.Dota2.ToSteamID(p.account_id).toString(),
                 startTime: match.startTime,
                 hero_id: p.hero_id,
                 hero_pick_order: p.hero_pick_order,
@@ -23,6 +24,12 @@ module.exports = async function(){
                 win : p.player_slot>100?!dbMatch.radiant_win:dbMatch.radiant_win
             }))
             await collection.insertMany(results);
+        },
+        getNoSteam: async function(){
+            return await collection.find({steam_id: null}).limit(100).toArray()
+        },
+        update: async function(filter, change){
+            await collection.findOneAndUpdate( filter, {$set:change});
         }
     }
     return obj;

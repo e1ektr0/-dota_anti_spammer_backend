@@ -34,6 +34,12 @@ module.exports = async function(){
                 lastRequestTime:Math.round(+new Date()/1000)
             }});
         },
+        
+        updateSentry: async function(account){
+            await accountsCollection.updateOne({_id: account._id}, {$set:{
+                sentry: account.sentry
+            }});
+        },
         getAll: async function() {
             return await accountsCollection.find().toArray()
         },

@@ -1,4 +1,4 @@
-module.exports = async function (account) {
+module.exports = async function (account, sentryCallBack) {
     var loader = {
         loadMatch: async function (matchId) {
             return new Promise((resolve, reject) => {
@@ -116,6 +116,8 @@ module.exports = async function (account) {
     steamUser.on('updateMachineAuth', function (sentry, callback) {
         var hashedSentry = crypto.createHash('sha1').update(sentry.bytes).digest();
         loader.sentry = hashedSentry;
+        if(sentryCallBack)
+            sentryCallBack(hashedSentry);
         callback({
             sha_file: hashedSentry
         });
@@ -125,7 +127,7 @@ module.exports = async function (account) {
     // Login, only passing authCode if it exists
     var logOnDetails = {
         "account_name": global.config.steam_user,
-        "password": global.config.steam_pass,
+        "password": global.config.steam_pass
     };
     if (global.config.steam_guard_code) logOnDetails.auth_code = global.config.steam_guard_code;
     if (global.config.two_factor_code) logOnDetails.two_factor_code = global.config.two_factor_code;

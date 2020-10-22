@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "dota2": "^7.0.3",
-    "dota2-with-proxy": "^7.0.24",
+    "dota2-with-proxy": "^7.0.25",
     "express": "^4.17.1",
     "imap": "^0.8.19",
     "imap-simple": "^5.0.0",

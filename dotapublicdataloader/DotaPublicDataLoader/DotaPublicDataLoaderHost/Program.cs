@@ -43,6 +43,8 @@ namespace DotaPublicDataLoaderHost
         //5662200710
         private static void Main()
         {
+            var matchDetailses = GetMatch(5666916014);
+            var detailses = GetMatches().FirstOrDefault(n=>n.match_id == 5666916014);
             var preparedClustersId = SupportedClusters.Select(n => (int) n / 10);
             var repository = new MongoRepository();
             var seq = repository.GetLastSeq();
@@ -103,7 +105,7 @@ namespace DotaPublicDataLoaderHost
         private static IList<MatchDetails> GetMatches()
         {
             var url =
-                $"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001?key={_key}";
+                $"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001?key={_key}&start_at_match_id=5666916013";
             var json = new WebClient().DownloadString(url);
             var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
             return matchHistory.result.matches;
