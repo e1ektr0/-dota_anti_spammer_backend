@@ -10,12 +10,20 @@ module.exports = async function(){
             for (let index = 0; index < dataArray.length; index++) {
                 const row = dataArray[index];
                 var info = row.split(':');
-               if( !accounts.some(n=>n.steam_user == info[0])){
+                var account = accounts.find(n=>n.steam_user == info[0])
+               if( !account){
                     await accountsCollection.insertOne({
                         steam_user: info[0],
                         steam_pass: info[1]
                     });
                     console.log("inset "+row)
+               }else{
+                   if(!account.email){
+                    await accountsCollection.updateOne({_id: account._id},{$set: {
+                        email: info[2],
+                        email_pass: info[3]
+                    }});
+                   }
                }
             }
             console.log("complete account loads")
@@ -27,7 +35,8 @@ module.exports = async function(){
             }});
         },
         getAll: async function() {
-            return await accountsCollection.find({guarded:{$ne: true}}).toArray()
+            //return await accountsCollection.find({guarded:{$ne: true}}).toArray()
+            return await accountsCollection.find({guarded:true}).toArray()
         },
         updateProxy: async function (account) {
             var accounts = await this.getAll();
@@ -62,7 +71,7 @@ module.exports = async function(){
             var rateLimitExpire = now - 86400;
             var filter = {$and:
                 [
-                   {guarded:{$ne: true}},
+                   {$and:[{guarded:{$ne: true}},{requestCount:null}]},
                    {$or:[{reserve_instance_id: null},{lastRequestTime: { $lt: expire } }]}, 
                    {
                        $or:[ 
