@@ -44,22 +44,15 @@ namespace DotaPublicDataLoaderHost
         private static void Main()
         {
             var preparedClustersId = SupportedClusters.Select(n => (int) n / 10);
-            var matchesRepository = new MatchesRepository();
-            var seq = matchesRepository.GetLastSeq();
+            var repository = new MongoRepository();
+            var seq = repository.GetLastSeq();
             var count = 0;
             var startTime = DateTime.UtcNow;
             seq ??= GetSeq();
-            var iteration = 0;
             while (true)
             {
-                if (iteration % 30 == 0)
-                {
-                    Console.WriteLine("GetSeq() - seq:" + (GetSeq() - seq));
-                }
-                iteration++;
                 var matches = GetMatchesStartingOnSeqNumber(seq.Value);
                 var newCount = matches.Count;
-                var filteredBySkill = 0;
 
                 if (matches.Any())
                 {
@@ -71,16 +64,13 @@ namespace DotaPublicDataLoaderHost
                 matches = matches.Where(n => n.lobby_type == 7).ToList(); //ranked ap
 
                 count += matches.Count();
-                if(newCount == 100)
-                    Thread.Sleep(1000);
-                else
-                    Thread.Sleep(5000);
+                Thread.Sleep(newCount == 100 ? 1000 : 5000);
 
                 if (matches.Any())
-                    matchesRepository.Insert(matches);
-
+                    repository.Insert(matches);
+                repository.UpdateMaxSeq(seq);
                 Console.WriteLine(
-                    $"Total loaded:{count} after {DateTime.UtcNow - startTime}. New matches:{newCount}. Add to queue: {matches.Count} Filtered by skill: {filteredBySkill}");
+                    $"Total loaded:{count} after {DateTime.UtcNow - startTime}. New matches:{newCount}. Add to queue: {matches.Count}");
               
             }
         }
@@ -88,13 +78,8 @@ namespace DotaPublicDataLoaderHost
         private static ulong GetSeq()
         {
             var matches = GetMatches();
-            return matches.Any() ? matches.Max(n => n.match_seq_num) : (ulong) 4756161920;
-        }
-
-        private static ulong GetMatchId()
-        {
-            var matches = GetMatches();
-            return matches.Any() ? matches.Max(n => n.match_id) : (ulong) 5664053717;
+            var max = matches.Any() ? matches.Max(n => n.match_seq_num) : 4763202335;
+            return Math.Max(max, 4763202335);
         }
 
         private static IList<MatchDetails> GetMatchesStartingOnSeqNumber(ulong seqNumber)
@@ -115,14 +100,10 @@ namespace DotaPublicDataLoaderHost
             }
         }
 
-        private static IList<MatchDetails> GetMatches(ulong? startMatchId = null, byte? skill = null)
+        private static IList<MatchDetails> GetMatches()
         {
             var url =
                 $"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001?key={_key}";
-            if (startMatchId != null)
-                url += "&start_at_match_id" + startMatchId;
-            if (skill != null)
-                url += "&skill=3";
             var json = new WebClient().DownloadString(url);
             var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
             return matchHistory.result.matches;
