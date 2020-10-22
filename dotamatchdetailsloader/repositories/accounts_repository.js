@@ -35,8 +35,7 @@ module.exports = async function(){
             }});
         },
         getAll: async function() {
-            //return await accountsCollection.find({guarded:{$ne: true}}).toArray()
-            return await accountsCollection.find({guarded:true}).toArray()
+            return await accountsCollection.find().toArray()
         },
         updateProxy: async function (account) {
             var accounts = await this.getAll();
@@ -71,7 +70,6 @@ module.exports = async function(){
             var rateLimitExpire = now - 86400;
             var filter = {$and:
                 [
-                   {$and:[{guarded:{$ne: true}},{requestCount:null}]},
                    {$or:[{reserve_instance_id: null},{lastRequestTime: { $lt: expire } }]}, 
                    {
                        $or:[ 
