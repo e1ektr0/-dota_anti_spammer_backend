@@ -5,9 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:hero="clr-namespace:DotaAntiSpammerNet.Controls.Hero"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"   Background="#181d23"
+             d:DesignHeight="300" d:DesignWidth="300"   
              Width="124"
              Height="110">
+    
+    <UserControl.Background>
+        <SolidColorBrush  Color="#181d23"/>
+    </UserControl.Background>
     <Border Name="Border" BorderBrush="Silver" BorderThickness="5 0 0 0">
         <Grid>
             <Grid.RowDefinitions>
