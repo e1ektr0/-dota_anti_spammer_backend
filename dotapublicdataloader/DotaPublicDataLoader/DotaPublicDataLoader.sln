@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotaPublicDataLoaderHost", "DotaPublicDataLoaderHost\DotaPublicDataLoaderHost.csproj", "{735E2630-DE32-42A2-AF3E-A10FB757BC3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotaAntiSpammer", "DotaAntiSpammer\DotaAntiSpammer.csproj", "{1AF0DE2A-D954-4FB2-9DF4-6089225D3FDF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,9 +12,5 @@ Global
 		{735E2630-DE32-42A2-AF3E-A10FB757BC3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{735E2630-DE32-42A2-AF3E-A10FB757BC3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{735E2630-DE32-42A2-AF3E-A10FB757BC3C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1AF0DE2A-D954-4FB2-9DF4-6089225D3FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AF0DE2A-D954-4FB2-9DF4-6089225D3FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1AF0DE2A-D954-4FB2-9DF4-6089225D3FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1AF0DE2A-D954-4FB2-9DF4-6089225D3FDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
