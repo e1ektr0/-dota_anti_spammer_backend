@@ -12,7 +12,29 @@
             <ColumnDefinition Width="40"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Image Margin="0 0 0 0" Name="Image" Source="../../icons/morphling.png" Grid.Column="0"></Image>
+        <Grid Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <Image Margin="0 0 0 0" Name="Image" Source="../../icons/morphling.png" 
+                   Grid.ColumnSpan="2" Grid.RowSpan="2"></Image>
+            <Image Name="SpamIcon" Grid.Row="0"  Margin="0 0 0 0"  Source="../../icons/spam.png" Grid.Column="1" ></Image>
+            <Border CornerRadius="0" Grid.Row="1" Grid.Column="1" Name="PickStageContainer"
+                    Width="13"
+                    Height="13"
+                    Background="Gray"
+                    BorderBrush="Black"
+                    BorderThickness="1">
+                <TextBlock HorizontalAlignment="Center" Name="PickStage" Margin="0" Padding="0" VerticalAlignment="Top" FontSize="9" FontWeight="Bold"  >3</TextBlock>
+            </Border>
+        </Grid>
+      
         <DockPanel Grid.Column="1" Margin="10 0"> 
             <TextBlock TextAlignment="Right" VerticalAlignment="Center" FontSize="15" FontWeight="Bold" Foreground="White" Name="Games">ss</TextBlock>
             <TextBlock TextAlignment="Right" VerticalAlignment="Center" FontSize="15" FontWeight="Bold" Foreground="White" Name="WinRate">55</TextBlock>

@@ -103,11 +103,15 @@
     <Compile Include="Controls\Player\PlayerMedium.xaml.cs">
       <DependentUpon>PlayerMedium.xaml</DependentUpon>
     </Compile>
+    <Compile Include="models\Hero.cs" />
+    <Compile Include="models\HeroConfig.cs" />
+    <Compile Include="models\HeroConfigAll.cs" />
     <Compile Include="models\IPlayerComponent.cs" />
     <Compile Include="Controls\Match\MatchSmall.xaml.cs">
       <DependentUpon>MatchSmall.xaml</DependentUpon>
     </Compile>
     <Compile Include="models\Match.cs" />
+    <Compile Include="models\Player.cs" />
     <Compile Include="models\PlayerColors.cs" />
     <Compile Include="Controls\Player\PlayerSmall.xaml.cs">
       <DependentUpon>PlayerSmall.xaml</DependentUpon>
@@ -405,6 +409,7 @@
     <Content Include="heroes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\spam.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

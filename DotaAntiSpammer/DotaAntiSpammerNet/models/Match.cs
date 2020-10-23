@@ -1,35 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 
 namespace DotaAntiSpammerNet.models
 {
-    public class HeroConfigAll
-    {
-        public List<HeroConfig> Heroes { get; set; }
-        private static HeroConfigAll _instance;
-        public static HeroConfigAll Instance
-        {
-            get
-            {
-                if (_instance != null)
-                    return _instance;
-                var readAllText = File.ReadAllText("heroes.json");
-                _instance = JsonSerializer.Deserialize<HeroConfigAll>(readAllText , new JsonSerializerOptions {
-                    PropertyNameCaseInsensitive = true,
-                });
-                return _instance;
-            }
-        }
-    }
-    public class HeroConfig
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string LocalName { get; set; }
-    }
     public class Match
     {
         public List<Player> Players { get; set; }
@@ -68,22 +42,5 @@ namespace DotaAntiSpammerNet.models
 
             return match;
         }
-    }
-
-    public class Player
-    {
-        public List<Hero> Heroes { get; set; }
-        public int TotalGames { get; set; }
-        public decimal WinRate { get; set; }
-    }
-
-    public class Hero
-    {
-        public int Id { get; set; }
-        public int Games { get; set; }
-        public decimal WinRate { get; set; }
-        public decimal PickRate { get; set; }
-        public decimal FirstPickRate { get; set; }
-        public decimal LastPickRate { get; set; }
     }
 }

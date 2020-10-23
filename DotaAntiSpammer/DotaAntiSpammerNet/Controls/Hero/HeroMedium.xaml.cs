@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -22,6 +23,16 @@ namespace DotaAntiSpammerNet.Controls.Hero
             Games.Text = hero.Games.ToString();
             WinRate.Text = $"{(int) hero.WinRate}%";
             WinRate.Foreground = hero.WinRate > 50 ? Brushes.Green : Brushes.Red;
+            SpamIcon.Visibility = hero.Spam ? Visibility.Visible : Visibility.Collapsed;
+            if (hero.PickStage != null)
+            {
+                PickStageContainer.Visibility = Visibility.Visible;
+                PickStage.Text = hero.PickStage.ToString();
+            }
+            else
+            {
+                PickStageContainer.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }
