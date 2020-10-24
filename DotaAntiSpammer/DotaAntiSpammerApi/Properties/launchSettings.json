@@ -1,0 +1,13 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "DotaAntiSpammerApi": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "stats/default",
+      "applicationUrl": "http://localhost:666",
+      "environmentVariables": {
+      }
+    }
+  }
+}

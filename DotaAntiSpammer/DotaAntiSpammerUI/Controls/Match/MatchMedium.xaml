@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="DotaAntiSpammerNet.Controls.Match.MatchMedium"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:player="clr-namespace:DotaAntiSpammerNet.Controls.Player"
+             mc:Ignorable="d"
+             Width="1500"
+             Height="110">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="264" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Orientation="Horizontal">
+
+            <player:PlayerMedium x:Name="Player01" />
+            <player:PlayerMedium x:Name="Player02" />
+            <player:PlayerMedium x:Name="Player03" />
+            <player:PlayerMedium x:Name="Player04" />
+            <player:PlayerMedium x:Name="Player05" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" Orientation="Horizontal">
+            <player:PlayerMedium x:Name="Player11" />
+            <player:PlayerMedium x:Name="Player12" />
+            <player:PlayerMedium x:Name="Player13" />
+            <player:PlayerMedium x:Name="Player14" />
+            <player:PlayerMedium x:Name="Player15" />
+        </StackPanel>
+    </Grid>
+</UserControl>

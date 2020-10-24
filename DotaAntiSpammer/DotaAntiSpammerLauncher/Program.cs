@@ -1,16 +1,15 @@
 ﻿using System;
-using Overlay.NET.Demo.Wpf;
+using DotaAntiSpammerNet;
 
 namespace DotaAntiSpammerLauncher
 {
-    internal class Program
+    internal static class Program
     {
         [STAThread]
         public static void Main(string[] args)
         {
             var wpfDemo = new WpfOverlayExampleDemo();
             wpfDemo.StartDemo();
-            Console.ReadLine();
         }
     }
 }

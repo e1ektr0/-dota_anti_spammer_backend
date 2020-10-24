@@ -42,9 +42,9 @@
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\DotaAntiSpammerNet\DotaAntiSpammerNet.csproj">
+      <ProjectReference Include="..\DotaAntiSpammerUI\DotaAntiSpammerUI.csproj">
         <Project>{cc85a943-db01-43f7-b643-1db97d1024a3}</Project>
-        <Name>DotaAntiSpammerNet</Name>
+        <Name>DotaAntiSpammerUI</Name>
       </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

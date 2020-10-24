@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="DotaAntiSpammerNet.Controls.Player.PlayerSmall"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:DotaAntiSpammerNet"
+             xmlns:hero="clr-namespace:DotaAntiSpammerNet.Controls.Hero"
+             mc:Ignorable="d"
+
+             Background="#181d23"
+             Width="124"
+             Height="110">
+    <Border Name="Border" BorderBrush="Silver" BorderThickness="5 0 0 0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <DockPanel Margin="10 0 10 0">
+                <TextBlock Name="Games" FontSize="16" Foreground="White">Left text</TextBlock>
+                <TextBlock TextAlignment="Right" Name="WinRate" FontSize="16" Foreground="White">Left text</TextBlock>
+            </DockPanel>
+            <UniformGrid Rows="3" Columns="3" Grid.Row="1">
+                <hero:HeroSmall x:Name="Hero0" />
+                <hero:HeroSmall x:Name="Hero1" />
+                <hero:HeroSmall x:Name="Hero2" />
+                <hero:HeroSmall x:Name="Hero3" />
+                <hero:HeroSmall x:Name="Hero4" />
+                <hero:HeroSmall x:Name="Hero5" />
+                <hero:HeroSmall x:Name="Hero6" />
+                <hero:HeroSmall x:Name="Hero7" />
+                <hero:HeroSmall x:Name="Hero8" />
+            </UniformGrid>
+        </Grid>
+    </Border>
+</UserControl>

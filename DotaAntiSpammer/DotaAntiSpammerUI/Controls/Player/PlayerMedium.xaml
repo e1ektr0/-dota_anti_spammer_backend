@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="DotaAntiSpammerNet.Controls.Player.PlayerMedium"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:hero="clr-namespace:DotaAntiSpammerNet.Controls.Hero"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             Width="124"
+             Height="110">
+
+    <UserControl.Background>
+        <SolidColorBrush Color="#181d23" />
+    </UserControl.Background>
+    <Border Name="Border" BorderBrush="Silver" BorderThickness="5 0 0 0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <DockPanel Margin="10 0 10 0">
+                <TextBlock Name="Games" FontSize="14" Foreground="White">Left text</TextBlock>
+                <TextBlock TextAlignment="Right" Name="WinRate" FontSize="14" Foreground="White">Left text</TextBlock>
+            </DockPanel>
+            <UniformGrid Rows="3" Grid.Row="1">
+                <hero:HeroMedium x:Name="Hero0" />
+                <hero:HeroMedium x:Name="Hero1" />
+                <hero:HeroMedium x:Name="Hero2" />
+            </UniformGrid>
+        </Grid>
+    </Border>
+</UserControl>
