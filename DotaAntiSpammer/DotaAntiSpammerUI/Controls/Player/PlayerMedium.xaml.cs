@@ -32,7 +32,7 @@ namespace DotaAntiSpammerNet.Controls.Player
                 _heroes[j].Ini(player.Heroes[j]);
             }
 
-            Games.Text = $"{player.TotalGames:0.00}";
+            Games.Text = $"{player.TotalGames}";
             WinRate.Text = $"{player.WinRate:0.00}%";
         }
     }

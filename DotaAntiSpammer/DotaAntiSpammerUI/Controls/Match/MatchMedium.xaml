@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Orientation="Horizontal">
 
-            <player:PlayerMedium x:Name="Player01" />
+            <player:PlayerMedium x:Name="Player01" Margin="5 0 0 0"/>
             <player:PlayerMedium x:Name="Player02" />
             <player:PlayerMedium x:Name="Player03" />
             <player:PlayerMedium x:Name="Player04" />

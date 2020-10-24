@@ -5,9 +5,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:match="clr-namespace:DotaAntiSpammerNet.Controls.Match"
         mc:Ignorable="d"
+        Left = "12"
+        Top = "30"
         Topmost="True"
         Title="OverlayWindow" AllowsTransparency="True" WindowStyle="None" 
-       
         Height="250" Width="1900">
     <Window.Background>
         <SolidColorBrush Opacity="0" Color="White" />

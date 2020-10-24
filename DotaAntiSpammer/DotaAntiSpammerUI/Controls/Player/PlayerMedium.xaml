@@ -19,8 +19,8 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <DockPanel Margin="10 0 10 0">
-                <TextBlock Name="Games" FontSize="14" Foreground="White">Left text</TextBlock>
-                <TextBlock TextAlignment="Right" Name="WinRate" FontSize="14" Foreground="White">Left text</TextBlock>
+                <TextBlock Name="Games" FontSize="14" Foreground="White">No info</TextBlock>
+                <TextBlock TextAlignment="Right" Name="WinRate" FontSize="14" Foreground="White"></TextBlock>
             </DockPanel>
             <UniformGrid Rows="3" Grid.Row="1">
                 <hero:HeroMedium x:Name="Hero0" />

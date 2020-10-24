@@ -1,5 +1,4 @@
 using System;
-using DotaAntiSpammerCommon.Models;
 using DotaAntiSpammerNet.Common;
 using Process.NET.Native.Types;
 using Process.NET.Windows;
@@ -8,7 +7,6 @@ namespace DotaAntiSpammerNet
 {
     public class WpfOverlayDemoExample : WpfOverlayPlugin
     {
-        private readonly Match _match;
 
         // Used to limit update rates via timestamps 
         // This way we can avoid thread issues with wanting to delay updates
@@ -20,9 +18,8 @@ namespace DotaAntiSpammerNet
 
         private int _temp;
 
-        public WpfOverlayDemoExample(Match match)
+        public WpfOverlayDemoExample()
         {
-            _match = match;
         }
 
         // Shapes used in the demo
@@ -33,7 +30,7 @@ namespace DotaAntiSpammerNet
             base.Enable();
         }
 
-        protected override void Disable()
+        public override void Disable()
         {
             _tickEngine.IsTicking = false;
             base.Disable();
@@ -72,9 +69,7 @@ namespace DotaAntiSpammerNet
             // Ensure window is shown or hidden correctly prior to updating
             if (!activated && visible)
             {
-                _temp++;
-                if (_temp > 10)
-                    OverlayWindow.Hide();
+                OverlayWindow.Hide();
             }
             else
             {

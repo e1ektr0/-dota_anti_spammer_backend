@@ -44,9 +44,10 @@ namespace DotaAntiSpammerCommon.Models
         public void Sort(List<string> getPlayerIDs)
         {
             var players = new List<Player>();
+            getPlayerIDs.AddRange(Enumerable.Range(0, 10 - getPlayerIDs.Count()).Select(n => ""));
             foreach (var playerId in getPlayerIDs)
             {
-                var firstOrDefault = Players.FirstOrDefault(n=>n.AccountId.ToString()==playerId);
+                var firstOrDefault = Players.FirstOrDefault(n => n.AccountId.ToString() == playerId);
                 players.Add(firstOrDefault);
             }
 

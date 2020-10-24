@@ -47,7 +47,7 @@ namespace DotaAntiSpammerNet.Common
         /// <summary>
         ///     Disables this instance.
         /// </summary>
-        protected virtual void Disable()
+        public virtual void Disable()
         {
             IsEnabled = false;
         }
@@ -69,5 +69,7 @@ namespace DotaAntiSpammerNet.Common
         public virtual void Update()
         {
         }
+
+     
     }
 }

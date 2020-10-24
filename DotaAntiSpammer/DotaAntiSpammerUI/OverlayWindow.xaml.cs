@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using DotaAntiSpammerCommon.Models;
 using DotaAntiSpammerNet.Common;
 
@@ -33,10 +34,23 @@ namespace DotaAntiSpammerNet
 
         public void Ini(Match match)
         {
+            Match.Ini(match);
+        }
+
+        public void ShowHide()
+        {
             Dispatcher.Invoke(() =>
             {
-                Match.Ini(match);
+                if(Visibility == Visibility.Hidden)
+                    Show();
+                else
+                    Hide();
             });
+        }
+
+        public void ShowI()
+        {
+            Dispatcher.Invoke(Show);
         }
     }
 }
