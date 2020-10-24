@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using DotaAntiSpammerNet;
 
 namespace DotaAntiSpammerLauncher
@@ -50,7 +48,8 @@ namespace DotaAntiSpammerLauncher
                     watcher.EnableRaisingEvents = true;
                 }
             };
-
+            
+            //wpfDemo1.StartDemo(iDs);
             while (true)
             {
                 Handler.WaitOne();

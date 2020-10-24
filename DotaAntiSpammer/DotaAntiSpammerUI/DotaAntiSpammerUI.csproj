@@ -432,6 +432,7 @@
     <Content Include="heroes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\snapfire.png" />
     <Resource Include="icons\spam.png" />
   </ItemGroup>
   <ItemGroup>

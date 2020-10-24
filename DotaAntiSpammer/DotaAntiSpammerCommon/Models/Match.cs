@@ -40,5 +40,17 @@ namespace DotaAntiSpammerCommon.Models
 
             return match;
         }
+
+        public void Sort(List<string> getPlayerIDs)
+        {
+            var players = new List<Player>();
+            foreach (var playerId in getPlayerIDs)
+            {
+                var firstOrDefault = Players.FirstOrDefault(n=>n.AccountId.ToString()==playerId);
+                players.Add(firstOrDefault);
+            }
+
+            Players = players;
+        }
     }
 }

@@ -55,7 +55,7 @@ namespace DotaAntiSpammerNet
                     });
                 _processSharp = new ProcessSharp(process, MemoryType.Remote);
                 _overlay = new WpfOverlayDemoExample(match);
-
+                match.Sort(getPlayerIDs);
                 var wpfOverlay = (WpfOverlayDemoExample) _overlay;
                 var overlayWindow = new OverlayWindow();
                 overlayWindow.Ini(match);
