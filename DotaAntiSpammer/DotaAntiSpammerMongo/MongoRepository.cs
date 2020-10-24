@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DotaAntiSpammerCommon;
+using DotaAntiSpammerMongo.Models;
 using DotaAntiSpammerMongo.Models.Match;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;

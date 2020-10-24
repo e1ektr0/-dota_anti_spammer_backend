@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Controls;
 using DotaAntiSpammerNet.Controls.Player;
 
 namespace DotaAntiSpammerNet.Controls.Match
@@ -13,6 +12,8 @@ namespace DotaAntiSpammerNet.Controls.Match
 
         public void Ini(DotaAntiSpammerCommon.Models.Match match)
         {
+            if(match?.Players == null)
+                return;
             var players = new List<PlayerMedium>
             {
                 Player01,
@@ -26,8 +27,11 @@ namespace DotaAntiSpammerNet.Controls.Match
                 Player14,
                 Player15
             };
-            for (var i = 0; i < players.Count; i++) 
-                players[i].Ini(i, match.Players[i]);
+            for (var i = 0; i < players.Count; i++)
+            {
+                if(match.Players.Count>i+1)
+                    players[i].Ini(i, match.Players[i]);
+            }
         }
     }
 }

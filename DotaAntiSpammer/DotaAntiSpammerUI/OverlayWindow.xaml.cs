@@ -1,27 +1,17 @@
 ﻿using System;
-using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
-using DotaAntiSpammerCommon;
 using DotaAntiSpammerCommon.Models;
 using DotaAntiSpammerNet.Common;
-using Process.NET.Windows;
 
 namespace DotaAntiSpammerNet
 {
-    public partial class OverlayWindow : Window
+    public partial class OverlayWindow
     {
-        private readonly IWindow _targetWindow;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="OverlayWindow" /> class.
-        /// </summary>
-        /// <param name="targetWindow">The window.</param>
-        /// <param name="match"></param>
-        public OverlayWindow(IWindow targetWindow, Match match)
+        public OverlayWindow()
         {
-            _targetWindow = targetWindow;
             InitializeComponent();
-            Match.Ini(match);
         }
 
         public event EventHandler<DrawingContext> Draw;
@@ -54,6 +44,19 @@ namespace DotaAntiSpammerNet
         protected virtual void OnDraw(DrawingContext e)
         {
             Draw?.Invoke(this, e);
+        }
+
+        private void OverlayWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            Console.WriteLine("sdasdasdas");
+        }
+
+        public void Ini(Match match)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Match.Ini(match);
+            });
         }
     }
 }

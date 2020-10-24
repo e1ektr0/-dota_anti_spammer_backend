@@ -6,10 +6,12 @@
         xmlns:match="clr-namespace:DotaAntiSpammerNet.Controls.Match"
         mc:Ignorable="d"
         Topmost="True"
-        Title="OverlayWindow" AllowsTransparency="True" WindowStyle="None"
-        Height="200" Width="1900">
+        Title="OverlayWindow" AllowsTransparency="True" WindowStyle="None" 
+       
+        Height="250" Width="1900">
     <Window.Background>
         <SolidColorBrush Opacity="0" Color="White" />
-    </Window.Background>
+    </Window.Background>        
     <match:MatchMedium x:Name="Match"/>
+
 </Window>

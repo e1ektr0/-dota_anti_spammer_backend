@@ -8,7 +8,6 @@
         Opacity="100"
         Left="220"
         Top="80"
-
         AllowsTransparency="True" WindowStyle="None"
         Title="MainWindow" Height="200" Width="1900">
     <Window.Background>

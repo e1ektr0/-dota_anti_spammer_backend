@@ -17,7 +17,7 @@ namespace DotaAntiSpammerNet.Common
         /// <value>
         ///     The target window.
         /// </value>
-        public IWindow TargetWindow { get; protected set; }
+        protected IWindow TargetWindow { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is enabled.
@@ -25,9 +25,9 @@ namespace DotaAntiSpammerNet.Common
         /// <value>
         ///     <c>true</c> if this instance is enabled; otherwise, <c>false</c>.
         /// </value>
-        public bool IsEnabled { get; protected set; }
+        protected bool IsEnabled { get; set; }
 
-        public SafeMemoryHandle TargetHandle { get; set; }
+        private SafeMemoryHandle TargetHandle { get; set; }
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -47,7 +47,7 @@ namespace DotaAntiSpammerNet.Common
         /// <summary>
         ///     Disables this instance.
         /// </summary>
-        public virtual void Disable()
+        protected virtual void Disable()
         {
             IsEnabled = false;
         }
@@ -57,7 +57,7 @@ namespace DotaAntiSpammerNet.Common
         /// </summary>
         /// <param name="targetWindow">The target window.</param>
         /// <param name="processSharpHandle"></param>
-        public virtual void Initialize(IWindow targetWindow, SafeMemoryHandle processSharpHandle)
+        public virtual void Initialize(IWindow targetWindow, SafeMemoryHandle processSharpHandle, OverlayWindow ovverlay)
         {
             TargetWindow = targetWindow;
             TargetHandle = processSharpHandle;

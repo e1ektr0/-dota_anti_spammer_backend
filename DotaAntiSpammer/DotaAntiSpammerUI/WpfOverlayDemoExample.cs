@@ -1,5 +1,4 @@
 using System;
-using DotaAntiSpammerCommon;
 using DotaAntiSpammerCommon.Models;
 using DotaAntiSpammerNet.Common;
 using Process.NET.Native.Types;
@@ -34,18 +33,19 @@ namespace DotaAntiSpammerNet
             base.Enable();
         }
 
-        public override void Disable()
+        protected override void Disable()
         {
             _tickEngine.IsTicking = false;
             base.Disable();
         }
 
-        public override void Initialize(IWindow targetWindow, SafeMemoryHandle processSharpHandle)
+        public override void Initialize(IWindow targetWindow, SafeMemoryHandle processSharpHandle,
+            OverlayWindow overlayWindow)
         {
             // Set target window by calling the base method
-            base.Initialize(targetWindow, processSharpHandle);
+            base.Initialize(targetWindow, processSharpHandle, overlayWindow);
 
-            OverlayWindow = new OverlayWindow(targetWindow, _match);
+            OverlayWindow = overlayWindow;
             
             _tickEngine.Interval = TimeSpan.FromMilliseconds(16);
             _tickEngine.PreTick += OnPreTick;

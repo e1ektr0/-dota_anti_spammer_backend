@@ -10,6 +10,7 @@ namespace DotaAntiSpammerNet
         public MainWindow()
         {
             InitializeComponent();
+            
         }
     }
 }

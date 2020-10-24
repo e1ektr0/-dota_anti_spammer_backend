@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.Json;
@@ -6,7 +7,6 @@ using DotaAntiSpammerCommon;
 using DotaAntiSpammerNet.Common;
 using Process.NET;
 using Process.NET.Memory;
-using Match = System.Text.RegularExpressions.Match;
 
 namespace DotaAntiSpammerNet
 {
@@ -32,30 +32,34 @@ namespace DotaAntiSpammerNet
         /// <summary>
         ///     Starts the demo.
         /// </summary>
-        public void StartDemo()
+        /// <param name="getPlayerIDs"></param>
+        /// <param name="overlayWindow"></param>
+        public void StartDemo(List<string> getPlayerIDs)
         {
+            if (getPlayerIDs == null)
+                throw new ArgumentNullException(nameof(getPlayerIDs));
+
             // Set up objects/overlay
-            System.Diagnostics.Process process;
-            while (true)
-            {
-                var processName = "dota2";
-                process = System.Diagnostics.Process.GetProcessesByName(processName).FirstOrDefault();
-                if (process != null) break;
-            }
+            var process = System.Diagnostics.Process.GetProcessesByName("dota2").FirstOrDefault();
+            if (process == null)
+                return;
 
             try
             {
-                var description = new WebClient().DownloadString(GlobalConfig.ApiUrl+GlobalConfig.StatsUrl+"?accounts=1049054702,134556694,132851371,890776708,252473997,875081338,204132249,488978443,898374197,157924451");
-                var match = JsonSerializer.Deserialize< DotaAntiSpammerCommon.Models.Match>(description, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+                var description = new WebClient().DownloadString(GlobalConfig.ApiUrl + GlobalConfig.StatsUrl +
+                                                                 "?accounts=" + string.Join(",", getPlayerIDs));
+                var match = JsonSerializer.Deserialize<DotaAntiSpammerCommon.Models.Match>(description,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
                 _processSharp = new ProcessSharp(process, MemoryType.Remote);
                 _overlay = new WpfOverlayDemoExample(match);
 
                 var wpfOverlay = (WpfOverlayDemoExample) _overlay;
-
-                wpfOverlay.Initialize(_processSharp.WindowFactory.MainWindow, _processSharp.Handle);
+                var overlayWindow = new OverlayWindow();
+                overlayWindow.Ini(match);
+                wpfOverlay.Initialize(_processSharp.WindowFactory.MainWindow, _processSharp.Handle, overlayWindow);
                 wpfOverlay.Enable();
 
                 _work = true;

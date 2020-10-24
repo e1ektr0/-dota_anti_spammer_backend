@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 
-namespace DotaAntiSpammerMongo
+namespace DotaAntiSpammerMongo.Models
 {
     public class Config
     {

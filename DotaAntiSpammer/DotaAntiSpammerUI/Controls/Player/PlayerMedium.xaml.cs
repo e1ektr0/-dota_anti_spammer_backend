@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Controls;
 using System.Windows.Media;
 using DotaAntiSpammerNet.Controls.Hero;
 using DotaAntiSpammerNet.models;
 
 namespace DotaAntiSpammerNet.Controls.Player
 {
-    public partial class PlayerMedium : UserControl
+    public partial class PlayerMedium
     {
         private readonly List<HeroMedium> _heroes;
 
@@ -26,8 +25,6 @@ namespace DotaAntiSpammerNet.Controls.Player
             Border.BorderBrush = new SolidColorBrush(PlayerColors.Colors[i]);
             for (var j = 0; j < player.Heroes.Count && j < _heroes.Count; j++)
                 _heroes[j].Ini(player.Heroes[j]);
-            
-            
 
             Games.Text = $"{player.TotalGames:0.00}";
             WinRate.Text = $"{player.WinRate:0.00}%";
