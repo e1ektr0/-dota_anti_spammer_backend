@@ -34,11 +34,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.UIAutomationClient, Version=12.0.20617.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\UIAComWrapper.1.1.0.14\lib\net40\Interop.UIAutomationClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="Process.NET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Process.NET.1.0.8\lib\Process.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -79,6 +87,10 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAComWrapper, Version=1.1.0.14, Culture=neutral, PublicKeyToken=78cbcf77433a85e5">
+      <HintPath>..\packages\UIAComWrapper.1.1.0.14\lib\net40\UIAComWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -88,6 +100,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\FileLogger.cs" />
+    <Compile Include="Common\ISerializer.cs" />
+    <Compile Include="Common\ISettings.cs" />
+    <Compile Include="Common\Log.cs" />
+    <Compile Include="Common\Native.cs" />
+    <Compile Include="Common\OverlayPlugin.cs" />
+    <Compile Include="Common\PluginBase.cs" />
+    <Compile Include="Common\PluginLoader.cs" />
+    <Compile Include="Common\RelativeFile.cs" />
+    <Compile Include="Common\SerializableSettings.cs" />
+    <Compile Include="Common\TickEngine.cs" />
+    <Compile Include="Common\TimeSpanExtensions.cs" />
+    <Compile Include="Common\WaitTimer.cs" />
+    <Compile Include="Common\WindowConstants.cs" />
+    <Compile Include="Common\WindowExtensions.cs" />
+    <Compile Include="Common\WpfOverlayPlugin.cs" />
+    <Compile Include="Common\XmlSerializerEx.cs" />
     <Compile Include="Controls\Hero\Hero.xaml.cs">
       <DependentUpon>Hero.xaml</DependentUpon>
     </Compile>
@@ -120,6 +149,8 @@
       <SubType>Code</SubType>
       <DependentUpon>RadiantPlayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WpfOverlayDemoExample.cs" />
+    <Compile Include="WpfOverlayExampleDemo.cs" />
     <Page Include="Controls\Hero\Hero.xaml" />
     <Page Include="Controls\Hero\HeroMedium.xaml" />
     <Page Include="Controls\Hero\HeroSmall.xaml" />
@@ -143,8 +174,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="OverlayWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OverlayWindow.xaml.cs">
+      <DependentUpon>OverlayWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
