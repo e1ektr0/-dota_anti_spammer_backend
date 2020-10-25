@@ -98,6 +98,7 @@ namespace DotaAntiSpammerLauncher
                     {
                         PropertyNameCaseInsensitive = true
                     });
+                match.Sort(playerIDs);
             }
             catch (Exception e)
             {
