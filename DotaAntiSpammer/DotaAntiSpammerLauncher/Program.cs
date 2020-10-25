@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Forms;
 using DotaAntiSpammerCommon;
+using DotaAntiSpammerCommon.Models;
 using DotaAntiSpammerNet;
 using Application = System.Windows.Forms.Application;
 
@@ -65,22 +67,35 @@ namespace DotaAntiSpammerLauncher
             };
 
             var application = new System.Windows.Application();
-            application.Run(window);
             LoadData(window);
+            application.Run(window);
         }
 
         private static void LoadData(OverlayWindow window)
         {
+            Match match = new Match
+            {
+                Players = new List<Player>()
+            };
             var playerIDs = FileManagement.GetPlayerIDs();
-            var description = new WebClient().DownloadString(GlobalConfig.ApiUrl + GlobalConfig.StatsUrl +
-                                                             "?accounts=" + string.Join(",", playerIDs));
-            var match = JsonSerializer.Deserialize<DotaAntiSpammerCommon.Models.Match>(description,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-            match.Sort(playerIDs);
+            try
+            {
+
+                var description = new WebClient().DownloadString(GlobalConfig.ApiUrl + GlobalConfig.StatsUrl +
+                                                                 "?accounts=" + string.Join(",", playerIDs));
+                match = JsonSerializer.Deserialize<DotaAntiSpammerCommon.Models.Match>(description,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+            }
+            catch (Exception e)
+            {
+                match.Sort(playerIDs);
+                Console.WriteLine(e);
+            }
             window.Dispatcher.Invoke(() => { window.Ini(match); });
+  
         }
     }
 }

@@ -5,12 +5,12 @@ namespace DotaAntiSpammerMongo.Models.Match
 {
     public class MatchDetails
     {
+        public ulong durtaion;
         public IList<Player> players { get; set; }
         public bool radiant_win { get; set; }
         public ulong start_time { get; set; }
         public ulong match_id { get; set; }
         public ulong match_seq_num { get; set; }
-        public byte lobby_type { get; set; }
         public byte game_mode { get; set; }
         public short cluster { get; set; }
     }

@@ -29,7 +29,8 @@ namespace DotaAntiSpammerNet.Controls.Match
             };
             for (var i = 0; i < players.Count; i++)
             {
-                players[i].Ini(i, match.Players[i]);
+                var matchPlayer = match.Players[i];
+                players[i].Ini(i, matchPlayer);
             }
         }
     }
