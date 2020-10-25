@@ -2,41 +2,37 @@
 using System.IO;
 using System.Net;
 using System.Text.Json;
-using System.Threading;
+using System.Windows;
 using System.Windows.Forms;
 using DotaAntiSpammerCommon;
 using DotaAntiSpammerNet;
-using GEst;
+using Application = System.Windows.Forms.Application;
 
 namespace DotaAntiSpammerLauncher
 {
     internal static class Program
     {
         private static string LastLobby { get; set; }
-        private static readonly AutoResetEvent  Handler = new AutoResetEvent(false);
-        private static int _pressed;
 
         [STAThread]
         public static void Main(string[] args)
         {
-            var iDs = FileManagement.GetPlayerIDs();
+            var window = new OverlayWindow {Visibility = Visibility.Hidden};
             LastLobby = FileManagement.GetLastLobby(FileManagement.ServerLogPath);
             var fileInfo = new FileInfo(FileManagement.ServerLogPath);
-            var wpfDemo1 = new WpfOverlayExampleDemo();
 
-            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             var kbh = new LowLevelKeyboardHook();
             kbh.OnKeyPressed += (sender, keys) =>
             {
-                if (keys != Keys.F1) 
+                if (keys != Keys.F1)
                     return;
-                
-                wpfDemo1.OverlayWindow.ShowHide();
+
+                window.ShowHideInvoke();
             };
             kbh.HookKeyboard();
-          
+
             var fileInfoDirectory = fileInfo.Directory;
             if (fileInfoDirectory == null)
             {
@@ -58,20 +54,8 @@ namespace DotaAntiSpammerLauncher
                         return;
 
                     watcher.EnableRaisingEvents = false;
-                    var playerIDs = FileManagement.GetPlayerIDs();
-                    var description = new WebClient().DownloadString(GlobalConfig.ApiUrl + GlobalConfig.StatsUrl +
-                                                                     "?accounts=" + string.Join(",", playerIDs));
-                    var match = JsonSerializer.Deserialize<DotaAntiSpammerCommon.Models.Match>(description,
-                        new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true
-                        });
-                    match.Sort(playerIDs);
-                    wpfDemo1.OverlayWindow.Dispatcher.Invoke(() =>
-                    {
-                        wpfDemo1.OverlayWindow.Ini(match);
-                    });
-                    wpfDemo1.OverlayWindow.ShowI();
+                    LoadData(window);
+                    window.ShowInvoke();
                     LastLobby = tempLobby;
                 }
                 finally
@@ -79,7 +63,24 @@ namespace DotaAntiSpammerLauncher
                     watcher.EnableRaisingEvents = true;
                 }
             };
-            wpfDemo1.StartDemo( FileManagement.GetPlayerIDs());  
+
+            var application = new System.Windows.Application();
+            application.Run(window);
+            LoadData(window);
+        }
+
+        private static void LoadData(OverlayWindow window)
+        {
+            var playerIDs = FileManagement.GetPlayerIDs();
+            var description = new WebClient().DownloadString(GlobalConfig.ApiUrl + GlobalConfig.StatsUrl +
+                                                             "?accounts=" + string.Join(",", playerIDs));
+            var match = JsonSerializer.Deserialize<DotaAntiSpammerCommon.Models.Match>(description,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            match.Sort(playerIDs);
+            window.Dispatcher.Invoke(() => { window.Ini(match); });
         }
     }
 }

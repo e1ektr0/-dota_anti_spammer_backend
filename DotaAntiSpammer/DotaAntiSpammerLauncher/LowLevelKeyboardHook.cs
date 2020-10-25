@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace GEst
+namespace DotaAntiSpammerLauncher
 {
     public class LowLevelKeyboardHook
     {

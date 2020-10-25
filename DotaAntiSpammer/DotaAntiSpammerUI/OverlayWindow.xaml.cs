@@ -7,10 +7,12 @@ namespace DotaAntiSpammerNet
 {
     public sealed partial class OverlayWindow
     {
+        private bool _notShowedYet;
 
         public OverlayWindow()
         {
             InitializeComponent();
+            _notShowedYet = true;
         }
 
         /// <summary>
@@ -37,20 +39,27 @@ namespace DotaAntiSpammerNet
             Match.Ini(match);
         }
 
-        public void ShowHide()
+        public void ShowHideInvoke()
         {
             Dispatcher.Invoke(() =>
             {
-                if(Visibility == Visibility.Hidden)
+                if (_notShowedYet)
+                {
+                    Show();
+                    _notShowedYet = false;
+                    return;
+                }
+                if(Visibility == Visibility.Hidden || Visibility == Visibility.Collapsed)
                     Show();
                 else
                     Hide();
             });
         }
 
-        public void ShowI()
+        public void ShowInvoke()
         {
             Dispatcher.Invoke(Show);
+            _notShowedYet = false;
         }
     }
 }
