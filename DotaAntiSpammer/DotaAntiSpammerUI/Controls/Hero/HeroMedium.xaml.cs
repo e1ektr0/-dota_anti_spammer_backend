@@ -16,7 +16,14 @@ namespace DotaAntiSpammerNet.Controls.Hero
 
         public void Ini(DotaAntiSpammerCommon.Models.Hero hero)
         {
+            if(hero == null)
+            {
+                Visibility = Visibility.Hidden;
+                return;
+            } 
+            
             Visibility = Visibility.Visible;
+            
             var instanceHero = HeroConfigAll.Instance.Heroes.FirstOrDefault(n=>n.Id == hero.Id);
             if (instanceHero == null)
             {

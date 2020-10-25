@@ -53,10 +53,9 @@ namespace DotaAntiSpammerApi.Controllers
 
                 player.Heroes = player.Heroes.OrderByDescending(n => n.Games+n.WinRate/100M).ToList();
             }
-
             return result;
         }
-
+        
         [HttpGet]
         [Route("default")]
         public Match GetDefault()

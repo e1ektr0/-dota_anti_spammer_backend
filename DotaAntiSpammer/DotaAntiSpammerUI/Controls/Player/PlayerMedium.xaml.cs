@@ -27,9 +27,20 @@ namespace DotaAntiSpammerNet.Controls.Player
             if(player == null)
                 return;
             Border.BorderBrush = new SolidColorBrush(PlayerColors.Colors[i]);
-            for (var j = 0; j < player.Heroes.Count && j < _heroes.Count; j++)
+            for (var j = 0; j < _heroes.Count; j++)
             {
-                _heroes[j].Ini(player.Heroes[j]);
+
+                if (player.Heroes.Count > j)
+                {
+
+                    var playerHero = player.Heroes[j];
+                    _heroes[j].Ini(playerHero);                    
+                }
+                else
+                {
+                    _heroes[j].Ini(null);                    
+
+                }
             }
 
             Games.Text = $"{player.TotalGames}";

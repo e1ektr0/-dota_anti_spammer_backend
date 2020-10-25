@@ -28,7 +28,7 @@ namespace DotaAntiSpammerLauncher
             var kbh = new LowLevelKeyboardHook();
             kbh.OnKeyPressed += (sender, keys) =>
             {
-                if (keys != Keys.Alt)
+                if (keys == Keys.LMenu)
                 {
                     _altPressed = true;
                 }
@@ -39,7 +39,7 @@ namespace DotaAntiSpammerLauncher
             };
             kbh.OnKeyUnpressed += (sender, keys) =>
             {
-                if (keys != Keys.Alt)
+                if (keys != Keys.LMenu)
                     return;
                 _altPressed = false;
             };
