@@ -55,14 +55,13 @@ namespace DotaPublicDataLoaderHost
             seq ??= GetSeq();
             while (true)
             {
-                var matches = GetMatchesStartingOnSeqNumber(seq.Value);
+                var matches = GetMatchesStartingOnSeqNumber(seq.Value+1);
                 var newCount = matches.Count;
 
                 if (matches.Any()) seq = matches.Max(n => n.match_seq_num);
 
                 matches = matches.Where(n => preparedClustersId.Contains(n.cluster / 10)).ToList();
                 matches = matches.Where(n => n.game_mode == 22).ToList(); //ranked ap
-                matches = matches.Where(n => n.lobby_type == 7).ToList(); //ranked ap
 
                 count += matches.Count();
                 Thread.Sleep(newCount == 100 ? 1000 : 5000);
