@@ -15,7 +15,7 @@ namespace DotaAntiSpammerLauncher
     internal static class Program
     {
         private static string LastLobby { get; set; }
-
+        private static bool _altPressed { get; set; }
         [STAThread]
         public static void Main(string[] args)
         {
@@ -28,10 +28,20 @@ namespace DotaAntiSpammerLauncher
             var kbh = new LowLevelKeyboardHook();
             kbh.OnKeyPressed += (sender, keys) =>
             {
-                if (keys != Keys.F1)
+                if (keys != Keys.Alt)
+                {
+                    _altPressed = true;
+                }
+                if (keys != Keys.Oemtilde || !_altPressed)
                     return;
 
                 window.ShowHideInvoke();
+            };
+            kbh.OnKeyUnpressed += (sender, keys) =>
+            {
+                if (keys != Keys.Alt)
+                    return;
+                _altPressed = false;
             };
             kbh.HookKeyboard();
 
