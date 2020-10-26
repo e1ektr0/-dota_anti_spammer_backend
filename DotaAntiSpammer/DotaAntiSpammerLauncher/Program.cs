@@ -92,7 +92,7 @@ namespace DotaAntiSpammerLauncher
                     _altPressed = true;
                 }
 
-                if (keys != Keys.D1 || !_altPressed)
+                if (keys != Keys.Oemtilde || !_altPressed)
                     return;
 
                 _window.ShowHideInvoke();

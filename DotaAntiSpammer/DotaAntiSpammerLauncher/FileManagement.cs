@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Microsoft.Win32;
 
 namespace DotaAntiSpammerLauncher
@@ -95,7 +96,18 @@ namespace DotaAntiSpammerLauncher
 
         public static string GetLastLobby(string filePath)
         {
-            return !File.Exists(filePath) ? null : File.ReadAllLines(filePath).LastOrDefault(x => x.Contains("Lobby"));
+            if (!File.Exists(filePath))
+                return null;
+            try
+            {
+                var lastOrDefault = File.ReadAllLines(filePath).LastOrDefault(x => x.Contains("Lobby"));
+                return lastOrDefault;
+            }
+            catch (Exception e)
+            {
+                Thread.Sleep(1000);
+                return File.ReadAllLines(filePath).LastOrDefault(x => x.Contains("Lobby"));
+            }
         }
     }
 }

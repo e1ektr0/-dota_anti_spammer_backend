@@ -24,8 +24,16 @@ namespace DotaAntiSpammerNet.Controls.Player
 
         public void Ini(int i, DotaAntiSpammerCommon.Models.Player player)
         {
-            if(player == null)
+            if (player == null)
+            {
+                Games.Text = "No info";
+                WinRate.Text = "";
+                foreach (var heroMedium in _heroes)
+                {
+                    heroMedium.Ini(null);
+                }
                 return;
+            }
             Border.BorderBrush = new SolidColorBrush(PlayerColors.Colors[i]);
             for (var j = 0; j < _heroes.Count; j++)
             {
