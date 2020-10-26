@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows;
+using System.Windows.Forms;
 using DotaAntiSpammerCommon.Models;
 using DotaAntiSpammerNet.Common;
 
@@ -13,16 +15,28 @@ namespace DotaAntiSpammerNet
         {
             InitializeComponent();
             _notShowedYet = true;
+            CreateTray();
         }
 
-        /// <summary>
-        ///     Updates this instance.
-        /// </summary>
-        public void Update()
+        private void CreateTray()
         {
-            Left = 12;
-            Top = 55;
+            var trayIcon = new NotifyIcon {Text = @"Dota Anti Spammer"};
+            var trayMenu = new ContextMenu();
+            trayMenu.MenuItems.Add("Exit", (sender, args) =>
+            {
+                Close();
+            });
+
+            trayIcon.ContextMenu = trayMenu;
+            trayIcon.Visible = true;
+            
+            trayIcon.Icon = new Icon("dota_anti_spam.ico");
+            trayIcon.DoubleClick += (sender, args) =>
+            {
+                ShowHideInvoke();
+            };
         }
+
 
         /// <summary>
         ///     Raises the <see cref="E:System.Windows.Window.SourceInitialized" /> event.

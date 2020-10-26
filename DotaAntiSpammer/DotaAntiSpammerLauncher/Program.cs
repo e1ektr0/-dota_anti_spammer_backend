@@ -24,13 +24,12 @@ namespace DotaAntiSpammerLauncher
         [STAThread]
         public static void Main()
         {
-            _window = new OverlayWindow {Visibility = Visibility.Hidden};
             _lastLobby = FileManagement.GetLastLobby(FileManagement.ServerLogPath);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            _window = new OverlayWindow {Visibility = Visibility.Hidden};
             AddHooks();
-
 
             AddFileWatcher();
 
@@ -39,6 +38,7 @@ namespace DotaAntiSpammerLauncher
             application.Run(_window);
         }
 
+     
         private static void AddFileWatcher()
         {
             var serverLogPath = FileManagement.ServerLogPath;
