@@ -76,7 +76,7 @@ module.exports = async function(){
             var rateLimitExpire = now - 86400;
             var filter = {$and:
                 [
-                   {$or:[{reserve_instance_id: null},{lastRequestTime: { $lt: expire } }]}, 
+                   {$or:[{reserve_instance_id: null},{$or:[{lastRequestTime: { $lt: expire } }, {lastRequestTime:null}]}]}, 
                    {
                        $or:[ 
                            {lastRequestTime: null},
