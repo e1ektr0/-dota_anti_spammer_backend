@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text.Json;
+using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using DotaAntiSpammerCommon;
@@ -14,37 +15,41 @@ namespace DotaAntiSpammerLauncher
 {
     internal static class Program
     {
-        private static string LastLobby { get; set; }
-        private static bool _altPressed { get; set; }
+        private static LowLevelKeyboardHook _kbh;
+        private static OverlayWindow _window;
+        private static string _lastLobby;
+        private static bool _altPressed;
+        private static FileSystemWatcher _watcher;
+
         [STAThread]
-        public static void Main(string[] args)
+        public static void Main()
         {
-            var window = new OverlayWindow {Visibility = Visibility.Hidden};
-            LastLobby = FileManagement.GetLastLobby(FileManagement.ServerLogPath);
-            var fileInfo = new FileInfo(FileManagement.ServerLogPath);
+            _window = new OverlayWindow {Visibility = Visibility.Hidden};
+            _lastLobby = FileManagement.GetLastLobby(FileManagement.ServerLogPath);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            var kbh = new LowLevelKeyboardHook();
-            kbh.OnKeyPressed += (sender, keys) =>
-            {
-                if (keys == Keys.LMenu)
-                {
-                    _altPressed = true;
-                }
-                if (keys != Keys.Oemtilde || !_altPressed)
-                    return;
+            AddHooks();
 
-                window.ShowHideInvoke();
-            };
-            kbh.OnKeyUnpressed += (sender, keys) =>
-            {
-                if (keys != Keys.LMenu)
-                    return;
-                _altPressed = false;
-            };
-            kbh.HookKeyboard();
 
+            AddFileWatcher();
+
+            var application = new System.Windows.Application();
+            LoadData(_window);
+            application.Run(_window);
+        }
+
+        private static void AddFileWatcher()
+        {
+            var serverLogPath = FileManagement.ServerLogPath;
+            while (serverLogPath == null)
+            {
+                Console.WriteLine(@"Server log not founded");
+                Thread.Sleep(2000);
+                serverLogPath = FileManagement.ServerLogPath;
+            }
+
+            var fileInfo = new FileInfo(serverLogPath);
             var fileInfoDirectory = fileInfo.Directory;
             if (fileInfoDirectory == null)
             {
@@ -52,48 +57,68 @@ namespace DotaAntiSpammerLauncher
                 return;
             }
 
-            var watcher = new FileSystemWatcher(fileInfoDirectory.FullName)
+            _watcher = new FileSystemWatcher(fileInfoDirectory.FullName)
             {
                 EnableRaisingEvents = true
             };
 
-            watcher.Changed += (o, a) =>
+            _watcher.Changed += (o, a) =>
             {
                 try
                 {
-                    var tempLobby = FileManagement.GetLastLobby(FileManagement.ServerLogPath);
-                    if (LastLobby == tempLobby)
+                    var tempLobby = FileManagement.GetLastLobby(serverLogPath);
+                    if (_lastLobby == tempLobby)
                         return;
 
-                    watcher.EnableRaisingEvents = false;
-                    LoadData(window);
-                    window.ShowInvoke();
-                    LastLobby = tempLobby;
+                    _watcher.EnableRaisingEvents = false;
+                    LoadData(_window);
+                    _window.ShowInvoke();
+                    _lastLobby = tempLobby;
                 }
                 finally
                 {
-                    watcher.EnableRaisingEvents = true;
+                    _watcher.EnableRaisingEvents = true;
                 }
             };
+        }
 
-            var application = new System.Windows.Application();
-            LoadData(window);
-            application.Run(window);
+        private static void AddHooks()
+        {
+            _kbh = new LowLevelKeyboardHook();
+            _kbh.OnKeyPressed += (sender, keys) =>
+            {
+                if (keys == Keys.LMenu)
+                {
+                    _altPressed = true;
+                }
+
+                if (keys != Keys.D1 || !_altPressed)
+                    return;
+
+                _window.ShowHideInvoke();
+            };
+            _kbh.OnKeyUnpressed += (sender, keys) =>
+            {
+                if (keys != Keys.LMenu)
+                    return;
+                _altPressed = false;
+            };
+            _kbh.HookKeyboard();
         }
 
         private static void LoadData(OverlayWindow window)
         {
-            Match match = new Match
+            var match = new Match
             {
                 Players = new List<Player>()
             };
             var playerIDs = FileManagement.GetPlayerIDs();
             try
             {
-
-                var description = new WebClient().DownloadString(GlobalConfig.ApiUrl + GlobalConfig.StatsUrl +
-                                                                 "?accounts=" + string.Join(",", playerIDs));
-                match = JsonSerializer.Deserialize<DotaAntiSpammerCommon.Models.Match>(description,
+                var statsUrl = GlobalConfig.ApiUrl + GlobalConfig.StatsUrl;
+                var url = statsUrl + "?accounts=" + string.Join(",", playerIDs);
+                var description = new WebClient().DownloadString(url);
+                match = JsonSerializer.Deserialize<Match>(description,
                     new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
@@ -105,8 +130,8 @@ namespace DotaAntiSpammerLauncher
                 match.Sort(playerIDs);
                 Console.WriteLine(e);
             }
+
             window.Dispatcher.Invoke(() => { window.Ini(match); });
-  
         }
     }
 }

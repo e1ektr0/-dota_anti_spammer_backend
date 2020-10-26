@@ -25,9 +25,6 @@ namespace DotaAntiSpammerLauncher
                     break;
                 }
 
-                if (_serverLog == null)
-                    throw new Exception("ServerLog not found");
-
                 return _serverLog;
             }
         }

@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>dota_anti_spam.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Interop.UIAutomationClient, Version=12.0.20617.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\UIAComWrapper.1.1.0.14\lib\net40\Interop.UIAutomationClient.dll</HintPath>
@@ -429,9 +432,12 @@
     <Resource Include="icons\zuus.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="icons\dota_anti_spam.png" />
+    <Resource Include="dota_anti_spam.ico" />
     <Content Include="heroes.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\master_tier.png" />
     <Resource Include="icons\snapfire.png" />
     <Resource Include="icons\spam.png" />
   </ItemGroup>

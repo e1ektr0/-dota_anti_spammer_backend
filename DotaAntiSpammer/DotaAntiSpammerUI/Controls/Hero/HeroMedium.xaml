@@ -24,7 +24,7 @@
 
             <Image Margin="0 0 0 0" Name="Image" Source="../../icons/morphling.png"
                    Grid.ColumnSpan="2" Grid.RowSpan="2" />
-            <Image Name="SpamIcon" Grid.Row="0" Margin="0 0 0 0" Source="../../icons/spam.png" Grid.Column="1" />
+            <Image Name="SpamIcon" Grid.Row="0" Margin="0 0 0 0" Source="../../icons/dota_anti_spam.png" Grid.Column="1" />
             <Border CornerRadius="0" Grid.Row="1" Grid.Column="1" Name="PickStageContainer"
                     Width="13"
                     Height="13"
