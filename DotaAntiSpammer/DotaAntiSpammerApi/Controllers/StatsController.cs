@@ -31,18 +31,24 @@ namespace DotaAntiSpammerApi.Controllers
 
             foreach (var playerStats in results.GroupBy(n => n.account_id))
             {
+                var grouping = playerStats.GroupBy(n => n.match_id).Select(n => n.FirstOrDefault()).ToList();
                 var player = new Player {AccountId = playerStats.Key, Heroes = new List<Hero>()};
-                var totalGames = playerStats.Count();
+                var totalGames = grouping.Count();
                 player.TotalGames = totalGames;
-                player.WinRate = playerStats.Count(n => n.win) * 100 / (decimal) totalGames;
+                player.WinRate = grouping.Count(n => n.win) * 100 / (decimal) totalGames;
                 result.Players.Add(player);
-                foreach (var heroStats in playerStats.GroupBy(n => n.hero_id))
+                foreach (var heroStats in grouping.GroupBy(n => n.hero_id))
                 {
                     var playerResults = heroStats.GroupBy(n => n.match_id).Select(n => n.FirstOrDefault()).ToList();
                     var hero = new Hero {Id = heroStats.Key, Games = playerResults.Count()};
                     hero.WinRate = (decimal) playerResults.Count(n => n.win) * 100 / hero.Games;
-                    var gamesHeroBanned = playerStats.Count(n => n.bans.Any(u => u == heroStats.Key));
-                    hero.PickRate = (decimal) playerResults.Count() * 100 / (totalGames - gamesHeroBanned);
+                    var gamesHeroBanned = grouping.Count(n => n.bans.Any(u => u == heroStats.Key));
+                    var totalWithoutBans = totalGames - gamesHeroBanned;
+                    if (totalWithoutBans == 0)
+                    {
+                        totalWithoutBans = playerResults.Count();
+                    } 
+                    hero.PickRate = (decimal) playerResults.Count() * 100 / totalWithoutBans;
                     var firstPickCount = playerResults.Count(n => n.hero_pick_order <= 4);
                     hero.FirstPickRate = ((decimal) firstPickCount / hero.Games) * 100;
                     var lastPickCount = playerResults.Count(n => n.hero_pick_order >= 9 && n.hero_pick_order <= 10) *
@@ -51,11 +57,12 @@ namespace DotaAntiSpammerApi.Controllers
                     player.Heroes.Add(hero);
                 }
 
-                player.Heroes = player.Heroes.OrderByDescending(n => n.Games+n.WinRate/100M).ToList();
+                player.Heroes = player.Heroes.OrderByDescending(n => n.Games + n.WinRate / 100M).ToList();
             }
+
             return result;
         }
-        
+
         [HttpGet]
         [Route("default")]
         public Match GetDefault()
