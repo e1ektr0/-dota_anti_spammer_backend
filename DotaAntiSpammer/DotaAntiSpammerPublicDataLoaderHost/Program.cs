@@ -42,10 +42,8 @@ namespace DotaPublicDataLoaderHost
 
         private static readonly Dictionary<int, ulong> Clusters = new Dictionary<int, ulong>();
 
-        //5662200710
         private static void Main()
         {
-            var detailses = GetMatches().FirstOrDefault(n => n.match_id == 5666916014);
             var preparedClustersId = SupportedClusters.Select(n => (int) n / 10);
             var repository = new MongoRepository();
             var seq = repository.GetLastSeq();
@@ -118,26 +116,6 @@ namespace DotaPublicDataLoaderHost
             var json = new WebClient().DownloadString(url);
             var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
             return matchHistory.result.matches;
-        }
-
-        private static IList<MatchDetails> GetMatch(ulong matchId)
-        {
-            var url =
-                $"https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={matchId}&key={_key}";
-            var json = new WebClient().DownloadString(url);
-            //    var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
-            //  return matchHistory.result.matches;
-            return null;
-        }
-
-        private static IList<MatchDetails> GetMatchx(ulong matchId)
-        {
-            var url =
-                $"https://api.steampowered.com/IEconDOTA2_570/GetHeroes/v0001/?language=en_en&key={_key}";
-            var json = new WebClient().DownloadString(url);
-            //    var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
-            //  return matchHistory.result.matches;
-            return null;
         }
     }
 }
