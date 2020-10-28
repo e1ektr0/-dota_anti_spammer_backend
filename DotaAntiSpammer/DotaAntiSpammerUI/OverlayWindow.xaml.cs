@@ -75,5 +75,6 @@ namespace DotaAntiSpammerNet
             Dispatcher.Invoke(Show);
             _notShowedYet = false;
         }
+        
     }
 }

@@ -30,13 +30,14 @@ namespace DotaAntiSpammerLauncher
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                _window = new OverlayWindow {Visibility = Visibility.Hidden};
+                _window = new OverlayWindow {Visibility = Visibility.Visible};
                 AddHooks();
 
                 AddFileWatcher();
 
                 var application = new System.Windows.Application();
                 LoadData(_window);
+                
                 application.Run(_window);
             }
             catch (Exception e)
