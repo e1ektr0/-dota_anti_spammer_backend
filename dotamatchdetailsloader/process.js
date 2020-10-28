@@ -1,7 +1,6 @@
 let accountRepositry;
 let matchRepository;
 const requestLimit = 95;
-const { result } = require('lodash');
 const { v4: uuidv4 } = require('uuid');
 const id = uuidv4();
 console.log(id);
@@ -20,6 +19,7 @@ async function start() {
         }
         else {
             console.log('account not found')
+            await sleep(1000);
         }
     }
 

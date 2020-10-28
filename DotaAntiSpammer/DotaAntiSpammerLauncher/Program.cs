@@ -24,18 +24,26 @@ namespace DotaAntiSpammerLauncher
         [STAThread]
         public static void Main()
         {
-            _lastLobby = FileManagement.GetLastLobby(FileManagement.ServerLogPath);
+            try
+            {
+                _lastLobby = FileManagement.GetLastLobby(FileManagement.ServerLogPath);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            _window = new OverlayWindow {Visibility = Visibility.Hidden};
-            AddHooks();
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                _window = new OverlayWindow {Visibility = Visibility.Hidden};
+                AddHooks();
 
-            AddFileWatcher();
+                AddFileWatcher();
 
-            var application = new System.Windows.Application();
-            LoadData(_window);
-            application.Run(_window);
+                var application = new System.Windows.Application();
+                LoadData(_window);
+                application.Run(_window);
+            }
+            catch (Exception e)
+            {
+                File.WriteAllText("log", e.Message);
+                throw;
+            }
         }
 
      
