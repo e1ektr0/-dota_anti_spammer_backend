@@ -2,13 +2,16 @@ module.exports = async function(){
     var db = await require("../db")();
     try{
         if(!(await db.listCollections().toArray()).some(x=>x.name == "results"))
-            db.createCollection("results")
+            db.createCollection("results");
+        if(!(await db.listCollections().toArray()).some(x=>x.name == "player_accounts"))
+            db.createCollection("player_accounts");
     }
     catch(e){
         console.log(e);
     }
     
     const collection = db.collection("results");
+    const collectionAccounts = db.collection("player_accounts");
     var obj = {
         add: async function(match,dbMatch, loader){
             var bans = match.picks_bans.filter(x=>!x.is_pick).map(x=>x.hero_id)
@@ -24,6 +27,10 @@ module.exports = async function(){
                 win : p.player_slot>100?!dbMatch.radiant_win:dbMatch.radiant_win
             }))
             await collection.insertMany(results);
+            for (let index = 0; index < results.length; index++) {
+                const result = results[index];
+                await collectionAccounts.updateOne({account_id: result.account_id},{ $set:{account_id: result.account_id,last_match_seq_num: result.match_seq_num }}, { upsert: true })
+            }
         },
         getNoSteam: async function(){
             return await collection.find({steam_id: null}).limit(100).toArray()

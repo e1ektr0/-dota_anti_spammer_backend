@@ -6,6 +6,7 @@ using DotaAntiSpammerMongo.Models.Match;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using Player = DotaAntiSpammerCommon.Models.Player;
 
 namespace DotaAntiSpammerMongo
 {
@@ -14,6 +15,7 @@ namespace DotaAntiSpammerMongo
         private const string MatchesCollectionName = "matches";
         private const string ConfigCollectionName = "config";
         private const string ResultsCollectionName = "results";
+        private const string PlayerAccountsCollectionName = "player_accounts";
         private readonly IMongoDatabase _database;
         private readonly Config _config;
 
@@ -39,9 +41,9 @@ namespace DotaAntiSpammerMongo
                     new CreateIndexModel<BsonDocument>(new JsonIndexKeysDefinition<BsonDocument>(indexJson)));
             }
 
-            if (listCollections.Any(n => n["name"] == ConfigCollectionName)) 
+            if (listCollections.Any(n => n["name"] == ConfigCollectionName))
                 return;
-            
+
             _database.CreateCollection(ConfigCollectionName);
             GetConfigCollection().InsertOne(new Config().ToBsonDocument());
         }
@@ -81,24 +83,78 @@ namespace DotaAntiSpammerMongo
         public List<PlayerResult> GetResults(string accounts)
         {
             var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
-            var stringFilter = "{ account_id: { $in: ["+accounts+"] } }";
-            return collection.Find(stringFilter).ToList().Select(n=> BsonSerializer.Deserialize<PlayerResult>(n)).ToList();
+            var stringFilter = "{ account_id: { $in: [" + accounts + "] } }";
+            return collection.Find(stringFilter).ToList().Select(n => BsonSerializer.Deserialize<PlayerResult>(n))
+                .ToList();
         }
 
         public List<PlayerResult> GetResultsByHeroId(in int heroId)
         {
             var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
-            var stringFilter = "{ hero_id: "+heroId+" }";
-            var resultsByHeroId = collection.Find(stringFilter).ToList().Select(n=> BsonSerializer.Deserialize<PlayerResult>(n)).ToList();
+            var stringFilter = "{ hero_id: " + heroId + " }";
+            var resultsByHeroId = collection.Find(stringFilter).ToList()
+                .Select(n => BsonSerializer.Deserialize<PlayerResult>(n)).ToList();
             return resultsByHeroId;
         }
-        
-        
-        public  List<PlayerResult> GetResultsByAccountId(in int accountId, in int heroId)
+
+
+        public List<PlayerResult> GetResultsByAccountId(in long accountId, in int heroId)
         {
             var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
-            var stringFilter = "{ account_id: "+accountId+",hero_id: "+heroId+" }";
-            var resultsByHeroId = collection.Find(stringFilter).ToList().Select(n=> BsonSerializer.Deserialize<PlayerResult>(n)).ToList();
+            var stringFilter = "{ account_id: " + accountId + ",hero_id: " + heroId + " }";
+            var resultsByHeroId = collection.Find(stringFilter).ToList()
+                .Select(n => BsonSerializer.Deserialize<PlayerResult>(n)).ToList();
+            return resultsByHeroId;
+        }
+
+        public List<PlayerResult> GetResultsByAccountId(in long accountId)
+        {
+            var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
+            var stringFilter = "{ account_id: " + accountId + "}";
+            var resultsByHeroId = collection.Find(stringFilter).ToList()
+                .Select(n => BsonSerializer.Deserialize<PlayerResult>(n)).ToList();
+            return resultsByHeroId;
+        }
+
+        public List<long> GetAllAccountId()
+        {
+            var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
+            var accList = collection.Distinct<long>("account_id", new BsonDocument()).ToList();
+            return accList;
+        }
+
+        public IEnumerable<PlayerAccountMongo> ChangedResults()
+        {
+            var collection = _database.GetCollection<BsonDocument>(PlayerAccountsCollectionName);
+            var filter = "{ '$expr': { '$ne': ['$processed_match_seq_num', '$last_match_seq_num'] } } ";
+            var list = collection.Find(filter)
+                .ToList();
+            var results = list.Select(n => BsonSerializer.Deserialize<PlayerAccountMongo>(n));
+            return results;
+        }
+        
+        public void UpdateResult(Player player, ulong max)
+        {
+            var collection = _database.GetCollection<BsonDocument>(PlayerAccountsCollectionName);
+            var playerAccount = new PlayerAccount
+            {
+                account_id = player.AccountId,
+                stats = player,
+                processed_match_seq_num = max,
+            };
+            collection.UpdateOne(Builders<BsonDocument>.Filter.Eq("account_id", player.AccountId),
+                new BsonDocument("$set", playerAccount.ToBsonDocument()), new UpdateOptions
+                {
+                    IsUpsert = true
+                });
+        }
+        
+        public List<PlayerAccountMongo> GetPlayers(string accounts)
+        {
+            var collection = _database.GetCollection<BsonDocument>(PlayerAccountsCollectionName);
+            var stringFilter = "{ account_id: { $in: [" + accounts + "] } }";
+            var resultsByHeroId = collection.Find(stringFilter).ToList()
+                .Select(n => BsonSerializer.Deserialize<PlayerAccountMongo>(n)).ToList();
             return resultsByHeroId;
         }
     }

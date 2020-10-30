@@ -37,7 +37,7 @@ namespace DotaAntiSpammerLauncher
 
                 var application = new System.Windows.Application();
                 LoadData(_window);
-                
+
                 application.Run(_window);
             }
             catch (Exception e)
@@ -47,7 +47,7 @@ namespace DotaAntiSpammerLauncher
             }
         }
 
-     
+
         private static void AddFileWatcher()
         {
             var serverLogPath = FileManagement.ServerLogPath;
@@ -104,6 +104,7 @@ namespace DotaAntiSpammerLauncher
                 if (keys != Keys.Oemtilde || !_altPressed)
                     return;
 
+                LoadData(_window);
                 _window.ShowHideInvoke();
             };
             _kbh.OnKeyUnpressed += (sender, keys) =>
@@ -117,6 +118,13 @@ namespace DotaAntiSpammerLauncher
 
         private static void LoadData(OverlayWindow window)
         {
+            window.Dispatcher.Invoke(() =>
+            {
+                window.Ini(new Match
+                {
+                    Players = new List<Player> {null, null, null, null, null, null, null, null, null, null}
+                });
+            });
             var match = new Match
             {
                 Players = new List<Player>()
