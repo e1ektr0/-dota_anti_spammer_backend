@@ -7,7 +7,7 @@ module.exports = async function (account, sentryCallBack) {
                 setTimeout(() => {
                     if (!done) {
                         console.log("timeout match loading")
-                        resolve(null);
+                        resolve(-1);
                     }
                 }, 20 * 1000);
 
@@ -17,7 +17,7 @@ module.exports = async function (account, sentryCallBack) {
                         console.log(matchId)
                         console.log(err)
 
-                        throw err;
+                        resolve(-1);
                     }
                     done = true;
                     resolve(body.match);
@@ -26,11 +26,10 @@ module.exports = async function (account, sentryCallBack) {
         },
         loadPlayerRank: async function (accountId) {
             return new Promise((resolve, reject) => {
-                var done = false;
                 setTimeout(() => {
                     if (!done) {
                         console.log("timeout account loading")
-                        resolve(null);
+                        resolve(-1);
                     }
                 }, 20 * 1000);
 

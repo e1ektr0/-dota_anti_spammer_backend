@@ -100,10 +100,10 @@ async function loadMatches(account, loader) {
         var player = dbMatch.players.find(x => x.account_id != 4294967295);
         if (player) {
             var rank = await loader.loadPlayerRank(player.account_id);
-            if (rank && rank >= 70) {//80+ imortals, 70+ divene
+            if (rank != -1 && rank >= 70) {//80+ imortals, 70+ divene
                 console.log('start match load ' + dbMatch.match_id + ' for rank' + rank + " by player account id " + player.account_id)
                 var match = await loader.loadMatch(dbMatch.match_id);
-                if (match) {
+                if (match != -1) {
                     await resultRepository.add(match, dbMatch, loader);
                     await matchRepository.delete(dbMatch._id);
                     loaded++;
