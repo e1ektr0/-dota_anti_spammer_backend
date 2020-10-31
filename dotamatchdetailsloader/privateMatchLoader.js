@@ -139,7 +139,10 @@ module.exports = async function (account, sentryCallBack) {
     }
 
     var server = steam.servers[Math.floor(Math.random() * steam.servers.length)];
-
+    server  ={
+        host: server.host,
+        port: parseInt(server.port)
+    }
     const options = {
         proxy: {
             host: account.proxy.host, // ipv4 or ipv6 or hostname174.77.111.197:41455
