@@ -34,6 +34,9 @@ module.exports = async function (account, sentryCallBack) {
                 }, 20 * 1000);
 
                 this.Dota2.requestProfileCard(accountId, function (error, profileData) {
+                    if(!profileData){
+                        resolve(-1);
+                    }
                     resolve(profileData.rank_tier);
                     done = true;
                 });

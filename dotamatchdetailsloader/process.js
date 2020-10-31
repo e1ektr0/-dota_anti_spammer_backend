@@ -1,6 +1,7 @@
 let accountRepositry;
 let matchRepository;
 const requestLimit = 95;
+const e = require('express');
 const { v4: uuidv4 } = require('uuid');
 const id = uuidv4();
 console.log(id);
@@ -82,16 +83,6 @@ async function loadMatches(account, loader) {
         if (!loader.connected)
             return;
 
-        // var i = 0;
-        // while (true) {
-        //     let results = await resultRepository.getNoSteam();
-        //     if (results.length == 0) break;
-        //     for (let index = 0; index < results.length; index++) {
-        //         const result = results[index];
-        //         await resultRepository.update({ _id: result._id }, { steam_id: loader.Dota2.ToSteamID(result.account_id).toString() })
-        //     }
-        //     console.log(i+=results.length);
-        // }
         var dbMatch = (await matchRepository.getNotProcessed(id)).value;
         if (!dbMatch) {
             await sleep(1000);
@@ -100,7 +91,10 @@ async function loadMatches(account, loader) {
         var player = dbMatch.players.find(x => x.account_id != 4294967295);
         if (player) {
             var rank = await loader.loadPlayerRank(player.account_id);
-            if (rank != -1 && rank >= 70) {//80+ imortals, 70+ divene
+            if(rank == -1){
+                account.requestCount = 100;
+            }
+            else if (rank != -1 && rank >= 70) {//80+ imortals, 70+ divene
                 console.log('start match load ' + dbMatch.match_id + ' for rank' + rank + " by player account id " + player.account_id)
                 var match = await loader.loadMatch(dbMatch.match_id);
                 if (match != -1) {
