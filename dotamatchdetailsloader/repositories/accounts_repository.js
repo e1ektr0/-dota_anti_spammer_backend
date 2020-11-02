@@ -73,6 +73,7 @@ module.exports = async function(){
             var now =Math.round(+new Date()/1000);
             var expire = now - 60*1;//1 min
             var rateLimitExpire = now - 86400;
+            var failExpire = now - 60*60;//1h
             var filter = {$and:
                 [
                    {$or:[{reserve_instance_id: null},{$or:[{lastRequestTime: { $lt: expire } }, {lastRequestTime:null}]}]}, 
@@ -81,7 +82,7 @@ module.exports = async function(){
                            {lastRequestTime: null},
                            {lastRequestTime:{ $lt: rateLimitExpire }}, 
                            {requestCount:{ $lt: 94 }},
-                           {requestCount:100}
+                           {$and:[{requestCount:100}, {lastRequestTime: { $lt: failExpire } }]}
                        ]
                    }
                ]};
