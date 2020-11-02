@@ -26,7 +26,7 @@ namespace DotaAntiSpammerApi.Controllers
 
             var result = new Match
             {
-                Players = results.Select(n=>n.stats).ToList()
+                Players = results.Select(n=>n.stats).Where(n=>n != null).ToList()
             };
 
             return result;

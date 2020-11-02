@@ -133,6 +133,7 @@ namespace DotaAntiSpammerMongo
             var results = list.Select(n => BsonSerializer.Deserialize<PlayerAccountMongo>(n));
             return results;
         }
+        
 
         public void UpdateResult(Player player, ulong max)
         {
