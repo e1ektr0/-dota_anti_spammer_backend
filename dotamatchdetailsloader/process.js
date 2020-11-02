@@ -50,8 +50,11 @@ async function createLoader(account) {
         return;
     }
     if (loader == null) {
-        await accountRepositry.updateProxy(account);
         console.log("loader fail");
+        console.log(account)
+        account.requestCount =100;
+        await accountRepositry.update(account);
+        
         return;
     }
 

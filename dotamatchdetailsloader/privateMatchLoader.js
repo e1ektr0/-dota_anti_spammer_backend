@@ -25,10 +25,12 @@ module.exports = async function (account, sentryCallBack) {
             });
         },
         loadPlayerRank: async function (accountId) {
+            var done = false;
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     if (!done) {
-                        console.log("timeout account loading")
+                        console.log("timeout account loading");
+                        done = true;
                         resolve(-1);
                     }
                 }, 20 * 1000);
@@ -62,17 +64,22 @@ module.exports = async function (account, sentryCallBack) {
     var retry = false;
     /* Steam logic */
     var onSteamLogOn = function onSteamLogOn(logonResp) {
+     
         if (logonResp.eresult == steam.EResult.OK) {
             util.log("Logged on.");
-            Dota2.launch();
+            if(!loader.connected)
+                Dota2.launch();
             loader.connected = true;
         }
         else {
+            if(retry)
+                return;
             sleep(5000).then(() => {
                 require("./rambler_pop3")(account.email, account.email_pass).then(code => {
                     logOnDetails.auth_code = code;
                     if (code) {
                         retry = true;
+                        console.log('retry with code'+code)
                         connect(options, loader, steamClient);
                     } else {
                         resolver('login fail');
@@ -82,11 +89,11 @@ module.exports = async function (account, sentryCallBack) {
         }
     },
         onSteamServers = function onSteamServers(servers) {
-            util.log("Received servers.");
-            fs.writeFile('servers', JSON.stringify(servers), (err) => {
-                if (err) { if (this.debug) util.log("Error writing "); }
-                else { if (this.debug) util.log(""); }
-            });
+            // util.log("Received servers.");
+            // fs.writeFile('servers', JSON.stringify(servers), (err) => {
+            //     if (err) { if (this.debug) util.log("Error writing "); }
+            //     else { if (this.debug) util.log(""); }
+            // });
         },
         onSteamLogOff = function onSteamLogOff(eresult) {
             if (retry) {
@@ -104,7 +111,6 @@ module.exports = async function (account, sentryCallBack) {
                 }
             }
             loader.connected = false;
-            util.log("Connection closed by server: " + error);
         };
 
     steamClient.on('connected', function () {
@@ -167,7 +173,7 @@ module.exports = async function (account, sentryCallBack) {
                 console.log("timeout dota2 loading")
                 resolve(null);
             }
-        }, 60 * 1000);
+        }, 120 * 1000);
         Dota2.on("ready", function () {
             done = true;
             resolve(loader);
@@ -183,7 +189,7 @@ function sleep(ms) {
   } 
 
 function connect(options, loader, steamClient){
-    console.log("connect to proxy")
+    console.log("connect to proxy" +options.proxy.host)
     const SocksClient = require('socks').SocksClient;
     SocksClient.createConnection(options, (err, info) => {
         if (err)

@@ -71,7 +71,6 @@ module.exports = async function(){
         },
         reserve: async function(id){
             var now =Math.round(+new Date()/1000);
-            console.log('set now', now);
             var expire = now - 60*1;//1 min
             var rateLimitExpire = now - 86400;
             var filter = {$and:
@@ -81,7 +80,8 @@ module.exports = async function(){
                        $or:[ 
                            {lastRequestTime: null},
                            {lastRequestTime:{ $lt: rateLimitExpire }}, 
-                           {requestCount:{ $lt: 94 }}
+                           {requestCount:{ $lt: 94 }},
+                           {requestCount:100}
                        ]
                    }
                ]};
@@ -90,6 +90,8 @@ module.exports = async function(){
                     lastRequestTime: now,
                     reserve_instance_id: id
             }});
+            if(result.value.requestCount == 100)
+                result.value.requestCount = 0;
             return result;
         }
     }

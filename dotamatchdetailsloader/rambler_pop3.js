@@ -87,7 +87,7 @@ module.exports = async function (username, password) {//user, password, markSeen
         resolver = resolve;
         setTimeout(() => {
             if (!done) {
-                console.log("timeout dota2 loading")
+                console.log("rambler timeout")
                 resolve(null);
             }
         }, 20 * 1000);
