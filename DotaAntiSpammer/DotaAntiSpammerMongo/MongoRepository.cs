@@ -18,6 +18,7 @@ namespace DotaAntiSpammerMongo
         private const string PlayerAccountsCollectionName = "player_accounts";
         private readonly IMongoDatabase _database;
         private readonly Config _config;
+        private bool _baseAccountsListLoaded;
 
         public MongoRepository()
         {
@@ -132,7 +133,7 @@ namespace DotaAntiSpammerMongo
             var results = list.Select(n => BsonSerializer.Deserialize<PlayerAccountMongo>(n));
             return results;
         }
-        
+
         public void UpdateResult(Player player, ulong max)
         {
             var collection = _database.GetCollection<BsonDocument>(PlayerAccountsCollectionName);
@@ -148,7 +149,7 @@ namespace DotaAntiSpammerMongo
                     IsUpsert = true
                 });
         }
-        
+
         public List<PlayerAccountMongo> GetPlayers(string accounts)
         {
             var collection = _database.GetCollection<BsonDocument>(PlayerAccountsCollectionName);
@@ -156,6 +157,25 @@ namespace DotaAntiSpammerMongo
             var resultsByHeroId = collection.Find(stringFilter).ToList()
                 .Select(n => BsonSerializer.Deserialize<PlayerAccountMongo>(n)).ToList();
             return resultsByHeroId;
+        }
+
+
+        public bool HighRankMatch(string accounts)
+        {
+            var collection = _database.GetCollection<BsonDocument>(PlayerAccountsCollectionName);
+            if (!_baseAccountsListLoaded)
+            {
+                var countDocumentsAsync = collection.CountDocuments(new BsonDocument());
+                if (countDocumentsAsync > 50 * 1000)
+                    _baseAccountsListLoaded = true;
+            }
+
+            if (!_baseAccountsListLoaded)
+                return false;
+
+            var stringFilter = "{ account_id: { $in: [" + accounts + "] } }";
+            var profile = collection.Find(stringFilter).FirstOrDefault();
+            return profile != null;
         }
     }
 }

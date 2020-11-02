@@ -52,27 +52,34 @@ namespace DotaPublicDataLoaderHost
             seq ??= GetSeq();
             while (true)
             {
-                var matches = GetMatchesStartingOnSeqNumber(seq.Value+1);
+                var matches = GetMatchesStartingOnSeqNumber(seq.Value + 1);
                 if (!matches.Any())
                 {
                     Thread.Sleep(5000);
                     continue;
                 }
-                var max = matches.Max(n=>n.start_time+n.durtaion);
+
+                var max = matches.Max(n => n.start_time + n.durtaion);
                 var utcDateTime = DateTimeOffset.FromUnixTimeSeconds((long) max).UtcDateTime;
-                if (DateTime.UtcNow-utcDateTime < TimeSpan.FromMinutes(5))
+                if (DateTime.UtcNow - utcDateTime < TimeSpan.FromMinutes(5))
                 {
                     Thread.Sleep(30000);
                     Console.WriteLine("sleep");
                     continue;
                 }
+
                 var newCount = matches.Count;
 
                 if (matches.Any()) seq = matches.Max(n => n.match_seq_num);
 
                 matches = matches.Where(n => preparedClustersId.Contains(n.cluster / 10)).ToList();
                 matches = matches.Where(n => n.game_mode == 22).ToList(); //ranked ap
-
+                matches = matches.Where(n =>
+                    {
+                        var accountIds = n.players.Select(x => x.account_id.ToString());
+                        var accounts = string.Join(",", accountIds);
+                        return repository.HighRankMatch(accounts);
+                    }).ToList();
                 count += matches.Count();
                 Thread.Sleep(newCount == 100 ? 1000 : 5000);
 
