@@ -19,7 +19,7 @@ namespace DotaAntiSpammerApi.Controllers
         }
 
         [HttpGet]
-        public Match Get(string accounts)
+        public Match Get(string accounts, long currentId)
         {
             //todo: accounts sql inj
             var results = _repository.GetPlayers(accounts);

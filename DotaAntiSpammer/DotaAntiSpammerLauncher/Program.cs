@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using DotaAntiSpammerCommon;
 using DotaAntiSpammerCommon.Models;
 using DotaAntiSpammerNet;
+using Microsoft.Win32;
 using Application = System.Windows.Forms.Application;
 
 namespace DotaAntiSpammerLauncher
@@ -133,7 +134,9 @@ namespace DotaAntiSpammerLauncher
             try
             {
                 var statsUrl = GlobalConfig.ApiUrl + GlobalConfig.StatsUrl;
-                var url = statsUrl + "?accounts=" + string.Join(",", playerIDs);
+                var currentId = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam\ActiveProcess", "ActiveUser",
+                    (long)0);
+                var url = statsUrl + "?accounts=" + string.Join(",", playerIDs) + "&currentId=" + currentId;
                 var description = new WebClient().DownloadString(url);
                 match = JsonSerializer.Deserialize<Match>(description,
                     new JsonSerializerOptions
