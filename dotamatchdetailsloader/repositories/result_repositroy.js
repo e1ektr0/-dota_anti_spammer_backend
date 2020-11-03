@@ -24,7 +24,9 @@ module.exports = async function(){
                 bans:bans,
                 match_id:dbMatch.match_id,
                 match_seq_num: dbMatch.match_seq_num,
-                win : p.player_slot>100?!dbMatch.radiant_win:dbMatch.radiant_win
+                win : p.player_slot>100?!dbMatch.radiant_win:dbMatch.radiant_win,
+                rank: p.lrank,
+                party_id:p.party_id
             }))
             await collection.insertMany(results);
             for (let index = 0; index < results.length; index++) {

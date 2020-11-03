@@ -175,7 +175,7 @@ namespace DotaAntiSpammerMongo
             if (!_baseAccountsListLoaded)
                 return null;
 
-            var stringFilter = "{ $and:[{account_id: { $in: [" + accounts + "] }}, {$or: [{stats.rank: null}, {stats.rank: {$gt:69}}]}]  }";
+            var stringFilter = "{ $and:[{account_id: { $in: [" + accounts + "] }}, {$or: [{'stats.rank': null}, {'stats.rank': {$gt:69}}]}]  }";
             var profile = collection.Find(stringFilter).FirstOrDefault();
             return profile != null;
         }
