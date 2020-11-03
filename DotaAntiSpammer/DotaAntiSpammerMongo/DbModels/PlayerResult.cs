@@ -3,6 +3,12 @@ using MongoDB.Bson;
 
 namespace DotaAntiSpammerMongo.Models
 {
+    public class LongObject
+    {
+        public long low { get; set; }
+        public long high { get; set; }
+        public bool unsigned { get; set; }
+    }
     public class PlayerResult
     {
         public ObjectId _id { get; set; }
@@ -15,5 +21,7 @@ namespace DotaAntiSpammerMongo.Models
         public bool win { get; set; }
         public string steam_id { get; set; }
         public List<int> bans { get; set; }
+        public int rank { get; set; }
+        public LongObject party_id { get; set; }
     }
 }

@@ -36,6 +36,7 @@ namespace DotaAntiSpammerMongo
             }
 
             player.Heroes = player.Heroes.OrderByDescending(n => n.Games + n.WinRate / 100M).ToList();
+            player.rank = results.OrderByDescending(n => n.match_seq_num).First().rank;
             return player;
         }
     }

@@ -75,11 +75,14 @@ namespace DotaPublicDataLoaderHost
                 matches = matches.Where(n => preparedClustersId.Contains(n.cluster / 10)).ToList();
                 matches = matches.Where(n => n.game_mode == 22).ToList(); //ranked ap
                 matches = matches.Where(n =>
-                    {
-                        var accountIds = n.players.Select(x => x.account_id.ToString());
-                        var accounts = string.Join(",", accountIds);
-                        return repository.HighRankMatch(accounts);
-                    }).ToList();
+                {
+                    var accountIds = n.players.Select(x => x.account_id.ToString());
+                    var accounts = string.Join(",", accountIds);
+                    var highRankMatch = repository.HighRankMatch(accounts);
+                    n.HightRankProof = highRankMatch != null;
+                    
+                    return highRankMatch ?? true;
+                }).ToList();
                 count += matches.Count();
                 Thread.Sleep(newCount == 100 ? 1000 : 5000);
 

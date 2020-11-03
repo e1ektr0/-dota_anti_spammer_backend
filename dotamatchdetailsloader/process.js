@@ -93,33 +93,35 @@ async function loadMatches(account, loader) {
         }
         var player = dbMatch.players.find(x => x.account_id != 4294967295);
         if (player) {
-            var rank = await loader.loadPlayerRank(player.account_id);
-            if(rank == -1){
-                account.requestCount = 100;
-            }
-            else if (rank != -1 && rank >= 70) {//80+ imortals, 70+ divene
-                console.log('start match load ' + dbMatch.match_id + ' for rank' + rank + " by player account id " + player.account_id)
+            if(dbMatch.HightRankProof || (await loader.loadPlayerRank(player.account_id)) >= 70){
+                console.log('start match load ' + dbMatch.match_id)
                 var match = await loader.loadMatch(dbMatch.match_id);
                 if (match != -1) {
+                    for (let index = 0; index < match.players.length; index++) {
+                        const currentPlayer = match.players[index];
+                        match.players[index].lrank = await loader.loadPlayerRank(currentPlayer.account_id);
+                    }
                     await resultRepository.add(match, dbMatch, loader);
                     await matchRepository.delete(dbMatch._id);
                     loaded++;
                     totalLoaded++;
+                     
+                    console.log('match loaded' + dbMatch.match_id)
+                    account.requestCount = (account.requestCount | 0) + 1;
+                    await accountRepositry.update(account);
+                    if (account.requestCount > requestLimit)
+                        break;
                 } else {
                     console.log("fail load match info" + match)
                     account.requestCount = 100;
                 }
-
-                account.requestCount = (account.requestCount | 0) + 1;
-                await accountRepositry.update(account);
-                if (account.requestCount > requestLimit)
-                    break;
-                console.log('match loaded' + dbMatch.match_id)
-            } else {
+               
+            }else{
                 await matchRepository.delete(dbMatch._id);
                 deleted++;
                 totalDeleted++;
             }
+
         } else {
             await matchRepository.delete(dbMatch._id);
             deleted++;
@@ -137,4 +139,5 @@ async function loadMatches(account, loader) {
         }
     }
 }
+
 start();

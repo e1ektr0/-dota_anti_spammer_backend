@@ -10,7 +10,6 @@ namespace DotaAntiSpammerAnalyzer
         static void Main(string[] args)
         {
             var mongoRepository = new MongoRepository();
-            //todo: get only changed accounts
             while (true)
             {
                 var allAccountId =mongoRepository.ChangedResults().Select(n=>n.account_id).ToList();
@@ -20,12 +19,12 @@ namespace DotaAntiSpammerAnalyzer
                     var playerResults = mongoRepository.GetResultsByAccountId(acc);
                     var calculate = Calculator.Calculate(acc, playerResults);
                     mongoRepository.UpdateResult(calculate, playerResults.Max(n=>n.match_seq_num));
-                    var newValue = ((i)/allAccountId.Count )*100;
                     if (i%100 != 0) 
                         continue;
                     Console.WriteLine($"{i}/{allAccountId.Count}");
                 }
-                
+
+                Console.WriteLine("done "+allAccountId.Count);
                 Thread.Sleep(1000);
             }
             

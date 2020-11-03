@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using DotaAntiSpammerCommon;
 using DotaAntiSpammerMongo.Models;
 using DotaAntiSpammerMongo.Models.Match;
@@ -161,7 +162,7 @@ namespace DotaAntiSpammerMongo
         }
 
 
-        public bool HighRankMatch(string accounts)
+        public bool? HighRankMatch(string accounts)
         {
             var collection = _database.GetCollection<BsonDocument>(PlayerAccountsCollectionName);
             if (!_baseAccountsListLoaded)
@@ -172,9 +173,9 @@ namespace DotaAntiSpammerMongo
             }
 
             if (!_baseAccountsListLoaded)
-                return false;
+                return null;
 
-            var stringFilter = "{ account_id: { $in: [" + accounts + "] } }";
+            var stringFilter = "{ $and:[{account_id: { $in: [" + accounts + "] }}, {$or: [{stats.rank: null}, {stats.rank: {$gt:69}}]}]  }";
             var profile = collection.Find(stringFilter).FirstOrDefault();
             return profile != null;
         }
