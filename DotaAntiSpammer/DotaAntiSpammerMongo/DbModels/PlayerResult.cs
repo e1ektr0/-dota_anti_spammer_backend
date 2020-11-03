@@ -21,7 +21,7 @@ namespace DotaAntiSpammerMongo.Models
         public bool win { get; set; }
         public string steam_id { get; set; }
         public List<int> bans { get; set; }
-        public int rank { get; set; }
+        public int? rank { get; set; }
         public LongObject party_id { get; set; }
     }
 }
