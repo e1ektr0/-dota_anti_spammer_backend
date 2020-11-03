@@ -78,10 +78,10 @@ namespace DotaPublicDataLoaderHost
                 {
                     var accountIds = n.players.Select(x => x.account_id.ToString());
                     var accounts = string.Join(",", accountIds);
-                    var highRankMatch = repository.HighRankMatch(accounts);
-                    n.HightRankProof = highRankMatch != null;
-                    
-                    return highRankMatch ?? true;
+                    var profiles = repository.GetProfiles(accounts);
+                    n.HightRankProof = profiles.Any();
+                    n.NeedRankCheck = profiles.All(n => n.stats?.rank == null);
+                    return n.HightRankProof;
                 }).ToList();
                 count += matches.Count();
                 Thread.Sleep(newCount == 100 ? 1000 : 5000);

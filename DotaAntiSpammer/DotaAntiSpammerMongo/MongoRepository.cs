@@ -162,7 +162,7 @@ namespace DotaAntiSpammerMongo
         }
 
 
-        public bool? HighRankMatch(string accounts)
+        public List<PlayerAccountMongo> GetProfiles(string accounts)
         {
             var collection = _database.GetCollection<BsonDocument>(PlayerAccountsCollectionName);
             if (!_baseAccountsListLoaded)
@@ -176,8 +176,8 @@ namespace DotaAntiSpammerMongo
                 return null;
 
             var stringFilter = "{ $and:[{account_id: { $in: [" + accounts + "] }}, {$or: [{'stats.rank': null}, {'stats.rank': {$gt:69}}]}]  }";
-            var profile = collection.Find(stringFilter).FirstOrDefault();
-            return profile != null;
+            var profiles = collection.Find(stringFilter).ToList().Select(n=>BsonSerializer.Deserialize<PlayerAccountMongo>(n)).ToList();
+            return profiles;
         }
     }
 }

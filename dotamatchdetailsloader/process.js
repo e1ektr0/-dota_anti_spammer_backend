@@ -95,22 +95,35 @@ async function loadMatches(account, loader) {
         var player = dbMatch.players.find(x => x.account_id != 4294967295);
         if (player) {
             if(dbMatch.HightRankProof || (await loader.loadPlayerRank(player.account_id)) >= 70){
-                console.log('start match load ' + dbMatch.match_id)
                 var match = await loader.loadMatch(dbMatch.match_id);
                 if (match != -1) {
-                    for (let index = 0; index < match.players.length; index++) {
-                        const currentPlayer = match.players[index];
-                        match.players[index].lrank = await loader.loadPlayerRank(currentPlayer.account_id);
+                    var rank = 0;
+                    if(dbMatch.NeedRankCheck || dbMatch.NeedRankCheck == null){
+                        for (let index = 0; index < match.players.length; index++) {
+                            const currentPlayer = match.players[index];
+                            match.players[index].lrank = await loader.loadPlayerRank(currentPlayer.account_id);
+                            if(rank< match.players[index].lrank)
+                                rank =  match.players[index].lrank;
+                            if(match.players[index].lrank>0)
+                                await resultRepository.updateRank(match.players[index].account_id, match.players[index].lrank);
+                        }
                     }
-                    await resultRepository.add(match, dbMatch, loader);
-                    await matchRepository.delete(dbMatch._id);
-                    loaded++;
-                    totalLoaded++;
-                     
-                    console.log('match loaded' + dbMatch.match_id)
-                    account.requestCount = (account.requestCount | 0) + 1;
-                    await accountRepositry.update(account);
-                 
+                    if(dbMatch.NeedRankCheck == false || rank >= 70){
+                        console.log('start match load ' + dbMatch.match_id+ 'with rank'+rank)
+                        await resultRepository.add(match, dbMatch, loader);
+                        await matchRepository.delete(dbMatch._id);
+                        loaded++;
+                        totalLoaded++;
+                        
+                        console.log('match loaded' + dbMatch.match_id)
+                        account.requestCount = (account.requestCount | 0) + 1;
+                        await accountRepositry.update(account);
+                    }
+                    else{
+                        await matchRepository.delete(dbMatch._id);
+                        deleted++;
+                        totalDeleted++;
+                    }
                 } else {
                     console.log("fail load match info" + match)
                     account.requestCount = 100;

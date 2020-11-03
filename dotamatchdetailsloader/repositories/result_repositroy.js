@@ -34,6 +34,9 @@ module.exports = async function(){
                 await collectionAccounts.updateOne({account_id: result.account_id},{ $set:{account_id: result.account_id,last_match_seq_num: result.match_seq_num }}, { upsert: true })
             }
         },
+        updateRank: async function(account_id, rank){
+            await collectionAccounts.updateOne({account_id: account_id},{ $set:{account_id: account_id, 'stats.rank': rank}}, { upsert: true })
+        },
         getNoSteam: async function(){
             return await collection.find({steam_id: null}).limit(100).toArray()
         },

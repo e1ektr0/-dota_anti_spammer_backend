@@ -14,6 +14,7 @@ namespace DotaAntiSpammerMongo.Models.Match
         public byte game_mode { get; set; }
         public short cluster { get; set; }
         public bool HightRankProof { get; set; }
+        public bool NeedRankCheck { get; set; }
     }
 
     public class MatchDetailsMongo : MatchDetails
