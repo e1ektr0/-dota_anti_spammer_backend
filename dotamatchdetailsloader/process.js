@@ -83,6 +83,7 @@ async function loadMatches(account, loader) {
     let deleted = 0;
     let loaded = 0;
     while (true) {
+        
         if (!loader.connected)
             return;
 
@@ -109,8 +110,7 @@ async function loadMatches(account, loader) {
                     console.log('match loaded' + dbMatch.match_id)
                     account.requestCount = (account.requestCount | 0) + 1;
                     await accountRepositry.update(account);
-                    if (account.requestCount > requestLimit)
-                        break;
+                 
                 } else {
                     console.log("fail load match info" + match)
                     account.requestCount = 100;
@@ -121,13 +121,14 @@ async function loadMatches(account, loader) {
                 deleted++;
                 totalDeleted++;
             }
-
         } else {
             await matchRepository.delete(dbMatch._id);
             deleted++;
             totalDeleted++;
         }
         await accountRepositry.update(account);
+        if (account.requestCount > requestLimit)
+            break;
         let now = Math.round(+new Date() / 1000);
         if (now - startTime > 60) {
             startTime = now;
