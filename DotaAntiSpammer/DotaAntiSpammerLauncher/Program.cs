@@ -135,8 +135,9 @@ namespace DotaAntiSpammerLauncher
             {
                 var statsUrl = GlobalConfig.ApiUrl + GlobalConfig.StatsUrl;
                 var currentId = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam\ActiveProcess", "ActiveUser",
-                    (long)0);
+                    (int)0);
                 var url = statsUrl + "?accounts=" + string.Join(",", playerIDs) + "&currentId=" + currentId;
+                match.CurrentId = (int)currentId; 
                 var description = new WebClient().DownloadString(url);
                 match = JsonSerializer.Deserialize<Match>(description,
                     new JsonSerializerOptions
@@ -144,6 +145,8 @@ namespace DotaAntiSpammerLauncher
                         PropertyNameCaseInsensitive = true
                     });
                 match.Sort(playerIDs);
+                match.CurrentId = (int)currentId; 
+                window.Dispatcher.Invoke(() => { window.Ini(match); });
             }
             catch (Exception e)
             {
@@ -151,7 +154,6 @@ namespace DotaAntiSpammerLauncher
                 Console.WriteLine(e);
             }
 
-            window.Dispatcher.Invoke(() => { window.Ini(match); });
         }
     }
 }

@@ -41,7 +41,7 @@ namespace DotaPublicDataLoaderHost
         };
 
         private static readonly Dictionary<int, ulong> Clusters = new Dictionary<int, ulong>();
-
+     
         private static void Main()
         {
             var preparedClustersId = SupportedClusters.Select(n => (int) n / 10);

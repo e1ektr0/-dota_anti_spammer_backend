@@ -126,6 +126,9 @@
     <Compile Include="Common\WindowExtensions.cs" />
     <Compile Include="Common\WpfOverlayPlugin.cs" />
     <Compile Include="Common\XmlSerializerEx.cs" />
+    <Compile Include="Controls\Bans\Bans.xaml.cs">
+      <DependentUpon>Bans.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Hero\Hero.xaml.cs">
       <DependentUpon>Hero.xaml</DependentUpon>
     </Compile>
@@ -150,6 +153,7 @@
     <Compile Include="Controls\Player\PlayerSmall.xaml.cs">
       <DependentUpon>PlayerSmall.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\Bans\Bans.xaml" />
     <Page Include="Controls\Hero\Hero.xaml" />
     <Page Include="Controls\Hero\HeroMedium.xaml" />
     <Page Include="Controls\Hero\HeroSmall.xaml" />

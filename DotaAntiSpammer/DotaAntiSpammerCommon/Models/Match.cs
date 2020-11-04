@@ -7,6 +7,7 @@ namespace DotaAntiSpammerCommon.Models
     public class Match
     {
         public List<Player> Players { get; set; }
+        public long CurrentId { get; set; }
 
         public static Match Sample()
         {
