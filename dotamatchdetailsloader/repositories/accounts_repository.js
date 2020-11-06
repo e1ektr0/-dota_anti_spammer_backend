@@ -91,7 +91,7 @@ module.exports = async function(){
                     lastRequestTime: now,
                     reserve_instance_id: id
             }}, { sort: { 'lastRequestTime': 1 } });
-            if(result&&result.value.requestCount == 100)
+            if(result&&result.value&&result.value.requestCount == 100)
                 result.value.requestCount = 0;
             return result;
         }

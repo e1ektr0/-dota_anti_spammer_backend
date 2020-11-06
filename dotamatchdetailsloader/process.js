@@ -65,9 +65,11 @@ async function assignProxyToAcc(account) {
     if (!account.proxy) {
         if (!await accountRepositry.updateProxy(account)) {
             console.log('no proxy for this acc')
-            return;
+            return false;;
         }
+        return false;;
     }
+    return true;
 }
 
 
@@ -95,20 +97,22 @@ async function loadMatches(account, loader) {
         var player = dbMatch.players.find(x => x.account_id != 4294967295);
         if (player) {
             if(dbMatch.HightRankProof || (await loader.loadPlayerRank(player.account_id)) >= 70){
-                var match = await loader.loadMatch(dbMatch.match_id);
-                if (match != -1) {
-                    var rank = 0;
-                    if(dbMatch.NeedRankCheck || dbMatch.NeedRankCheck == null){
-                        for (let index = 0; index < match.players.length; index++) {
-                            const currentPlayer = match.players[index];
-                            match.players[index].lrank = await loader.loadPlayerRank(currentPlayer.account_id);
-                            if(rank< match.players[index].lrank)
-                                rank =  match.players[index].lrank;
-                            if(match.players[index].lrank>0)
-                                await resultRepository.updateRank(match.players[index].account_id, match.players[index].lrank);
-                        }
+                var rank = 0;
+                if(dbMatch.NeedRankCheck || dbMatch.NeedRankCheck == null){
+                    for (let index = 0; index < dbMatch.players.length; index++) {
+                        const currentPlayer = dbMatch.players[index];
+                        if(currentPlayer.account_id == 4294967295)
+                            continue;
+                        dbMatch.players[index].lrank = await loader.loadPlayerRank(currentPlayer.account_id);
+                        if(rank< dbMatch.players[index].lrank)
+                            rank = dbMatch.players[index].lrank;
+                        if(dbMatch.players[index].lrank>0)
+                            await resultRepository.updateRank(dbMatch.players[index].account_id, dbMatch.players[index].lrank);
                     }
-                    if(dbMatch.NeedRankCheck == false || rank >= 70){
+                }
+                if(rank == 0 || rank >70){
+                    var match = await loader.loadMatch(dbMatch.match_id);
+                    if (match != -1) {
                         console.log('start match load ' + dbMatch.match_id+ 'with rank'+rank)
                         await resultRepository.add(match, dbMatch, loader);
                         await matchRepository.delete(dbMatch._id);
@@ -117,17 +121,19 @@ async function loadMatches(account, loader) {
                         
                         console.log('match loaded' + dbMatch.match_id)
                         account.requestCount = (account.requestCount | 0) + 1;
+                        account.totalRequestCount = (account.totalRequestCount | 0) + 1;
+                        
                         await accountRepositry.update(account);
+                    } else {
+                        console.log("fail load match info" + match)
+                        account.requestCount = 100;
                     }
-                    else{
-                        await matchRepository.delete(dbMatch._id);
-                        deleted++;
-                        totalDeleted++;
-                    }
-                } else {
-                    console.log("fail load match info" + match)
-                    account.requestCount = 100;
                 }
+                else{
+                    await matchRepository.delete(dbMatch._id);
+                    deleted++;
+                    totalDeleted++;
+                }  
                
             }else{
                 await matchRepository.delete(dbMatch._id);
