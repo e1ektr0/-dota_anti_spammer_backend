@@ -10,7 +10,11 @@ namespace DotaAntiSpammerNet
         public MainWindow()
         {
             InitializeComponent();
-            
+                     
+
+            Match.Ini(DotaAntiSpammerCommon.Models.Match.Sample());
+
         }
+        
     }
 }

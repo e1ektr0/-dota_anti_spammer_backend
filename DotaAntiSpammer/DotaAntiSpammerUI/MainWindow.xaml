@@ -13,5 +13,5 @@
     <Window.Background>
         <SolidColorBrush Opacity="0" Color="White" />
     </Window.Background>
-    <match:MatchMedium />
+    <match:MatchMedium x:Name="Match" />
 </Window>

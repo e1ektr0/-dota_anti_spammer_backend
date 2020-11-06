@@ -72,7 +72,7 @@ namespace DotaAntiSpammerNet
 
         public void ShowInvoke()
         {
-            Dispatcher.Invoke(Show);
+            Dispatcher?.Invoke(Show);
             _notShowedYet = false;
         }
         
