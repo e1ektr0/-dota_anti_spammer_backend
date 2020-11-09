@@ -23,5 +23,6 @@ namespace DotaAntiSpammerMongo.Models
         public List<int> bans { get; set; }
         public int? rank { get; set; }
         public LongObject party_id { get; set; }
+        public List<long> party { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using DotaAntiSpammerCommon;
 using DotaAntiSpammerMongo.Models;
 using DotaAntiSpammerMongo.Models.Match;
@@ -104,6 +103,16 @@ namespace DotaAntiSpammerMongo
         {
             var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
             var stringFilter = "{ account_id: " + accountId + ",hero_id: " + heroId + " }";
+            var resultsByHeroId = collection.Find(stringFilter).ToList()
+                .Select(n => BsonSerializer.Deserialize<PlayerResult>(n)).ToList();
+            return resultsByHeroId;
+        }
+
+
+        public List<PlayerResult> GetResultsByMatch(ulong matchId)
+        {
+            var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
+            var stringFilter = "{ match_id: " + matchId +  " }";
             var resultsByHeroId = collection.Find(stringFilter).ToList()
                 .Select(n => BsonSerializer.Deserialize<PlayerResult>(n)).ToList();
             return resultsByHeroId;

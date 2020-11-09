@@ -9,5 +9,6 @@ namespace DotaAntiSpammerCommon.Models
         public int TotalGames { get; set; }
         public decimal WinRate { get; set; }
         public List<Hero> Heroes { get; set; }
+        public List<long> Party { get; set; }
     }
 }

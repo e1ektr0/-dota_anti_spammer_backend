@@ -17,6 +17,7 @@ namespace DotaAntiSpammerMongo
             foreach (var heroStats in grouping.GroupBy(n => n.hero_id))
             {
                 var playerResults = heroStats.GroupBy(n => n.match_id).Select(n => n.FirstOrDefault()).ToList();
+                
                 var hero = new Hero {Id = heroStats.Key, Games = playerResults.Count()};
                 hero.WinRate = (decimal) playerResults.Count(n => n.win) * 100 / hero.Games;
                 var gamesHeroBanned = grouping.Count(n => n.bans.Any(u => u == heroStats.Key));
@@ -32,7 +33,10 @@ namespace DotaAntiSpammerMongo
                 var lastPickCount = playerResults.Count(n => n.hero_pick_order >= 9 && n.hero_pick_order <= 10) *
                                     100;
                 hero.LastPickRate = (decimal) lastPickCount / hero.Games;
+                
                 player.Heroes.Add(hero);
+                player.Party = playerResults.Where(n => n.party != null).SelectMany(n => n.party)
+                    .Where(n => n != accountId).ToList();
             }
 
             player.Heroes = player.Heroes.OrderByDescending(n => n.Games + n.WinRate / 100M).ToList();
