@@ -14,6 +14,21 @@ namespace DotaAntiSpammerNet
         public OverlayWindow()
         {
             InitializeComponent();
+            var screenWidth = 1400; //SystemParameters.PrimaryScreenWidth;
+            if (Width < screenWidth)
+            {
+                var windowWidth = Width;
+                Left = (screenWidth / 2) - (windowWidth / 2);
+            }
+            else
+            {
+                Left = 0;
+                var delta = Width - screenWidth;
+                var midColumnWidth = Match.MidColumn.Width.Value - delta * 2;
+                Match.MidColumn.Width = new GridLength(midColumnWidth, GridUnitType.Pixel);
+                Width = Width - delta;
+            }
+
             _notShowedYet = true;
             CreateTray();
         }
@@ -22,19 +37,13 @@ namespace DotaAntiSpammerNet
         {
             var trayIcon = new NotifyIcon {Text = @"Dota Anti Spammer"};
             var trayMenu = new ContextMenu();
-            trayMenu.MenuItems.Add("Exit", (sender, args) =>
-            {
-                Close();
-            });
+            trayMenu.MenuItems.Add("Exit", (sender, args) => { Close(); });
 
             trayIcon.ContextMenu = trayMenu;
             trayIcon.Visible = true;
-            
+
             trayIcon.Icon = new Icon("dota_anti_spam.ico");
-            trayIcon.DoubleClick += (sender, args) =>
-            {
-                ShowHideInvoke();
-            };
+            trayIcon.DoubleClick += (sender, args) => { ShowHideInvoke(); };
         }
 
 
@@ -63,7 +72,8 @@ namespace DotaAntiSpammerNet
                     _notShowedYet = false;
                     return;
                 }
-                if(Visibility == Visibility.Hidden || Visibility == Visibility.Collapsed)
+
+                if (Visibility == Visibility.Hidden || Visibility == Visibility.Collapsed)
                     Show();
                 else
                     Hide();
@@ -75,6 +85,5 @@ namespace DotaAntiSpammerNet
             Dispatcher?.Invoke(Show);
             _notShowedYet = false;
         }
-        
     }
 }

@@ -10,11 +10,11 @@
              Height="110">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="264" />
-            <ColumnDefinition />
+            <ColumnDefinition  Width="*" />
+            <ColumnDefinition Width="264" Name="MidColumn" />
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border Grid.Column="0" BorderThickness="1" Name="BorderA" Margin="5 0 0 0">
+        <Border Grid.Column="0" BorderThickness="1" Name="BorderA">
             <StackPanel Orientation="Horizontal">
                 <player:PlayerMedium x:Name="Player01"  />
                 <player:PlayerMedium x:Name="Player02" />
