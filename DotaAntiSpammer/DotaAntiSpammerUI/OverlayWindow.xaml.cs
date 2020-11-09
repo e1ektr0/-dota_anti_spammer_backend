@@ -14,7 +14,7 @@ namespace DotaAntiSpammerNet
         public OverlayWindow()
         {
             InitializeComponent();
-            var screenWidth = 1400; //SystemParameters.PrimaryScreenWidth;
+            var screenWidth = SystemParameters.PrimaryScreenWidth;
             if (Width < screenWidth)
             {
                 var windowWidth = Width;

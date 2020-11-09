@@ -103,7 +103,7 @@ namespace DotaAntiSpammerLauncher
                 var lastOrDefault = File.ReadAllLines(filePath).LastOrDefault(x => x.Contains("Lobby"));
                 return lastOrDefault;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Thread.Sleep(1000);
                 return File.ReadAllLines(filePath).LastOrDefault(x => x.Contains("Lobby"));
