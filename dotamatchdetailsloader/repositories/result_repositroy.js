@@ -15,6 +15,7 @@ module.exports = async function(){
     var obj = {
         add: async function(match,dbMatch, loader){
             var bans = match.picks_bans.filter(x=>!x.is_pick).map(x=>x.hero_id)
+            
             var results = match.players.map(p=>({
                 account_id: p.account_id,
                 steam_id: loader.Dota2.ToSteamID(p.account_id).toString(),
@@ -26,7 +27,8 @@ module.exports = async function(){
                 match_seq_num: dbMatch.match_seq_num,
                 win : p.player_slot>100?!dbMatch.radiant_win:dbMatch.radiant_win,
                 rank: p.lrank,
-                party_id:p.party_id
+                party_id:p.party_id,
+                party: match.players.filter(x=>x.party_id == p.party_id).map(x=>x.account_id)
             }))
             await collection.insertMany(results);
             for (let index = 0; index < results.length; index++) {
