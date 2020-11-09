@@ -98,17 +98,15 @@ async function loadMatches(account, loader) {
         if (player) {
             if(dbMatch.HightRankProof || (await loader.loadPlayerRank(player.account_id)) >= 70){
                 var rank = 0;
-                if(dbMatch.NeedRankCheck || dbMatch.NeedRankCheck == null){
-                    for (let index = 0; index < dbMatch.players.length; index++) {
-                        const currentPlayer = dbMatch.players[index];
-                        if(currentPlayer.account_id == 4294967295)
-                            continue;
-                        dbMatch.players[index].lrank = await loader.loadPlayerRank(currentPlayer.account_id);
-                        if(rank< dbMatch.players[index].lrank)
-                            rank = dbMatch.players[index].lrank;
-                        if(dbMatch.players[index].lrank>0)
-                            await resultRepository.updateRank(dbMatch.players[index].account_id, dbMatch.players[index].lrank);
-                    }
+                for (let index = 0; index < dbMatch.players.length; index++) {
+                    const currentPlayer = dbMatch.players[index];
+                    if(currentPlayer.account_id == 4294967295)
+                        continue;
+                    dbMatch.players[index].lrank = await loader.loadPlayerRank(currentPlayer.account_id);
+                    if(rank< dbMatch.players[index].lrank)
+                        rank = dbMatch.players[index].lrank;
+                    if(dbMatch.players[index].lrank>0)
+                        await resultRepository.updateRank(dbMatch.players[index].account_id, dbMatch.players[index].lrank);
                 }
                 if(rank == 0 || rank >70){
                     var match = await loader.loadMatch(dbMatch.match_id);
