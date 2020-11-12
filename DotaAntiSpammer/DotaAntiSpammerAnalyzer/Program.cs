@@ -12,12 +12,13 @@ namespace DotaAntiSpammerAnalyzer
             var mongoRepository = new MongoRepository();
             while (true)
             {
-                var allAccountId =mongoRepository.ChangedResults().Select(n=>n.account_id).ToList();
+                var allAccountId =mongoRepository.ChangedResults().ToList();
                 for (var i = 0; i < allAccountId.Count; i++)
                 {
                     var acc = allAccountId[i];
-                    var playerResults = mongoRepository.GetResultsByAccountId(acc);
-                    var calculate = Calculator.Calculate(acc, playerResults);
+                    var playerResults = mongoRepository.GetResultsByAccountId(acc.account_id);
+                    var calculate = Calculator.Calculate(acc.account_id, playerResults);
+                    calculate.rank = acc.stats.rank;
                     mongoRepository.UpdateResult(calculate, playerResults.Max(n=>n.match_seq_num));
                     if (i%100 != 0) 
                         continue;
