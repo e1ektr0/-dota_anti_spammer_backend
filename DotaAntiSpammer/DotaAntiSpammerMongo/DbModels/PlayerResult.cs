@@ -3,11 +3,13 @@ using MongoDB.Bson;
 
 namespace DotaAntiSpammerMongo.Models
 {
-    public class LongObject
+    public class MatchAnalyze
     {
-        public long low { get; set; }
-        public long high { get; set; }
-        public bool unsigned { get; set; }
+        public ObjectId _id { get; set; }
+        public ulong match_id { get; set; }
+        public ulong replay_salt { get; set; }
+        public int cluster { get; set; }
+                
     }
     public class PlayerResult
     {

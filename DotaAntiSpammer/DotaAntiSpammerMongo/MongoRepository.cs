@@ -16,6 +16,7 @@ namespace DotaAntiSpammerMongo
         private const string ConfigCollectionName = "config";
         private const string ResultsCollectionName = "results";
         private const string PlayerAccountsCollectionName = "player_accounts";
+        private const string MatchesAnalyzeCollectionName = "matches_analyze";
         private readonly IMongoDatabase _database;
         private readonly Config _config;
         private bool _baseAccountsListLoaded;
@@ -86,6 +87,13 @@ namespace DotaAntiSpammerMongo
             var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
             var stringFilter = "{ account_id: { $in: [" + accounts + "] } }";
             return collection.Find(stringFilter).ToList().Select(n => BsonSerializer.Deserialize<PlayerResult>(n))
+                .ToList();
+        }
+
+        public List<MatchAnalyze> GetMatchForAnalyze()
+        {
+            var collection = _database.GetCollection<BsonDocument>(MatchesAnalyzeCollectionName);
+            return collection.Find("{}").Limit(1).ToList().Select(n => BsonSerializer.Deserialize<MatchAnalyze>(n))
                 .ToList();
         }
 

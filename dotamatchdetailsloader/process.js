@@ -114,6 +114,7 @@ async function loadMatches(account, loader) {
                         console.log('start match load ' + dbMatch.match_id+ 'with rank'+rank)
                         await resultRepository.add(match, dbMatch, loader);
                         await matchRepository.delete(dbMatch._id);
+                        await matchRepository.addSalt(dbMatch.match_id, match.replay_salt, match.cluster);
                         loaded++;
                         totalLoaded++;
                         

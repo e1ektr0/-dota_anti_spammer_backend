@@ -1,6 +1,12 @@
 module.exports = async function(){
     var db = await require("../db")();
+
+    if(!(await db.listCollections().toArray()).some(x=>x.name == "matches_analyze"))
+        db.createCollection("matches_analyze");
+
     const collection = db.collection("matches");
+    const collectionAnalyze = db.collection("matches_analyze");
+
     var obj = {
         update: async function (match, dbMatch) {
             var setObject = {
@@ -28,6 +34,9 @@ module.exports = async function(){
         },
         delete: async function(matchId){
             await collection.deleteMany({_id: matchId});
+        },
+        addSalt: async function addSalt(match_id, replay_salt, cluster){
+            await collectionAnalyze.insertOne({match_id, replay_salt, cluster});
         }
     }
     return obj;
