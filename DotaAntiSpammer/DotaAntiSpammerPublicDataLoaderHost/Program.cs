@@ -114,10 +114,10 @@ namespace DotaPublicDataLoaderHost
 
         private static IList<MatchDetails> GetMatchesStartingOnSeqNumber(ulong seqNumber)
         {
-            var strings = _proxyList[_i% _key.Length].Split(":");
+            var strings = _proxyList[_i% _keys.Count].Split(":");
             var host = strings[0];
             var port = int.Parse(strings[1]);
-            var key = _keys[_i % _key.Length];
+            var key = _keys[_i % _keys.Count];
             try
             {
                 var url =
