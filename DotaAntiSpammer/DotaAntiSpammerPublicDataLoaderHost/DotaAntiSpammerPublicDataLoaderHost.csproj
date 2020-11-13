@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -12,6 +12,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DotaAntiSpammerMongo\DotaAntiSpammerMongo.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="proxy_http_ip.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

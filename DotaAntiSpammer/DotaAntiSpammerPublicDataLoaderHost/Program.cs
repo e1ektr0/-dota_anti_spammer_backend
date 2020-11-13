@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.Json;
@@ -33,17 +34,25 @@ namespace DotaPublicDataLoaderHost
     {
         private static readonly string _key = "D356E276EC76CE809A433AC8A0B81952";
 
-        private static readonly List<Clusters> SupportedClusters = new List<Clusters>
+        private static List<string> _keys = new List<string>
         {
-            DotaPublicDataLoaderHost.Clusters.Europx, DotaPublicDataLoaderHost.Clusters.Europ2,
-            DotaPublicDataLoaderHost.Clusters.Europ,
-            DotaPublicDataLoaderHost.Clusters.Rus
+            "88A096C96B6C9632E7897B677172890F",
+            "D356E276EC76CE809A433AC8A0B81952"
         };
 
-        private static readonly Dictionary<int, ulong> Clusters = new Dictionary<int, ulong>();
-     
+        private static readonly List<Clusters> SupportedClusters = new List<Clusters>
+        {
+            Clusters.Europx,
+            Clusters.Europ2,
+            Clusters.Europ,
+            Clusters.Rus
+        };
+
+        private static string[] _proxyList;
+
         private static void Main()
         {
+            _proxyList = File.ReadAllLines("proxy_http_ip.txt");
             var preparedClustersId = SupportedClusters.Select(n => (int) n / 10);
             var repository = new MongoRepository();
             var seq = repository.GetLastSeq();
@@ -101,20 +110,30 @@ namespace DotaPublicDataLoaderHost
             return Math.Max(max, 4763202335);
         }
 
+        private static int _i;
+
         private static IList<MatchDetails> GetMatchesStartingOnSeqNumber(ulong seqNumber)
         {
+            var strings = _proxyList[_i% _key.Length].Split(":");
+            var host = strings[0];
+            var port = int.Parse(strings[1]);
+            var key = _keys[_i % _key.Length];
             try
             {
                 var url =
-                    $"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistoryBySequenceNum/v1?start_at_match_seq_num={seqNumber}&key={_key}";
-                var json = new WebClient().DownloadString(url);
+                    $"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistoryBySequenceNum/v1?start_at_match_seq_num={seqNumber}&key={key}";
+
+                var webProxy = new WebProxy(host, port);
+                var webClient = new WebClient {Proxy = webProxy};
+                var json = webClient.DownloadString(url);
                 var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
                 return matchHistory.result.matches ?? new List<MatchDetails>();
             }
             catch (WebException e)
             {
                 Console.WriteLine(e);
-                Thread.Sleep(30 * 1000);
+                _i++;
+                Thread.Sleep(1000);
                 return GetMatchesStartingOnSeqNumber(seqNumber);
             }
         }
@@ -123,7 +142,9 @@ namespace DotaPublicDataLoaderHost
         {
             var url =
                 $"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001?key={_key}&matches_requested=1";
-            var json = new WebClient().DownloadString(url);
+            var webClient = new WebClient();
+            webClient.Proxy = new WebProxy();
+            var json = webClient.DownloadString(url);
             var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
             return matchHistory.result.matches;
         }
