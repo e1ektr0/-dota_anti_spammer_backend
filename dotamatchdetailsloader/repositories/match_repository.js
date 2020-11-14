@@ -35,8 +35,12 @@ module.exports = async function(){
         delete: async function(matchId){
             await collection.deleteMany({_id: matchId});
         },
-        addSalt: async function addSalt(match_id, replay_salt, cluster){
-            await collectionAnalyze.insertOne({match_id, replay_salt, cluster});
+        addSalt: async function addSalt(match_id, replay_salt, cluster, match){
+            var players = match.players.map(p=>({
+                account_id: p.account_id,
+                hero_id: p.hero_id,
+            }))
+            await collectionAnalyze.insertOne({match_id, replay_salt, cluster, players});
         }
     }
     return obj;
