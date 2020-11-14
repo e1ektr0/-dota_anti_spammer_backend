@@ -125,7 +125,10 @@ namespace DotaPublicDataLoaderHost
                     $"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistoryBySequenceNum/v1?start_at_match_seq_num={seqNumber}&key={key}";
 
                 var webProxy = new WebProxy(host, port);
-                var webClient = new WebClient {Proxy = webProxy};
+                var webClient = new WebClient
+                {
+                    //Proxy = webProxy
+                };
                 var json = webClient.DownloadString(url);
                 var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
                 return matchHistory.result.matches ?? new List<MatchDetails>();
@@ -144,7 +147,6 @@ namespace DotaPublicDataLoaderHost
             var url =
                 $"https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001?key={_key}&matches_requested=1";
             var webClient = new WebClient();
-            webClient.Proxy = new WebProxy();
             var json = webClient.DownloadString(url);
             var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
             return matchHistory.result.matches;
