@@ -83,6 +83,7 @@ namespace DotaPublicDataLoaderHost
 
                 matches = matches.Where(n => preparedClustersId.Contains(n.cluster / 10)).ToList();
                 matches = matches.Where(n => n.game_mode == 22).ToList(); //ranked ap
+                matches = matches.Where(n => n.lobby_type == 7).ToList(); //ranked ap
                 matches = matches.Where(n =>
                 {
                     var accountIds = n.players.Select(x => x.account_id.ToString());

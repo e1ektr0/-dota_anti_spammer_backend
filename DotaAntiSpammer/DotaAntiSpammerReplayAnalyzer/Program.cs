@@ -15,6 +15,7 @@ namespace DotaAntiSpammerReplayAnalyzer
             {
                 var matchName = $"{match.match_id}_{match.replay_salt}.dem.bz2";
                 var url = $"http://replay{match.cluster}.valve.net/570/" + matchName;
+                Console.WriteLine(url);
                 new WebClient().DownloadFile(url, matchName);
             }
         }

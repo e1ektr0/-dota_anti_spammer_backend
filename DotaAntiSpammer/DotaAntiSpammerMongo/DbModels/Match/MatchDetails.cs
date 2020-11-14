@@ -6,6 +6,7 @@ namespace DotaAntiSpammerMongo.Models.Match
     public class MatchDetails
     {
         public ulong durtaion;
+        public int lobby_type;
         public IList<Player> players { get; set; }
         public bool radiant_win { get; set; }
         public ulong start_time { get; set; }
