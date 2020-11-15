@@ -36,8 +36,8 @@ namespace DotaPublicDataLoaderHost
 
         private static List<string> _keys = new List<string>
         {
+            "D356E276EC76CE809A433AC8A0B81952",
             "88A096C96B6C9632E7897B677172890F",
-            "D356E276EC76CE809A433AC8A0B81952"
         };
 
         private static readonly List<Clusters> SupportedClusters = new List<Clusters>
@@ -62,6 +62,12 @@ namespace DotaPublicDataLoaderHost
             while (true)
             {
                 var matches = GetMatchesStartingOnSeqNumber(seq.Value + 1);
+                if (matches == null)
+                {
+                    seq++;
+                    continue;
+                }
+
                 if (!matches.Any())
                 {
                     Thread.Sleep(5000);
@@ -115,7 +121,7 @@ namespace DotaPublicDataLoaderHost
 
         private static IList<MatchDetails> GetMatchesStartingOnSeqNumber(ulong seqNumber)
         {
-            var strings = _proxyList[_i% _keys.Count].Split(":");
+            var strings = _proxyList[_i % _keys.Count].Split(":");
             var host = strings[0];
             var port = int.Parse(strings[1]);
             var key = _keys[_i % _keys.Count];
@@ -127,10 +133,15 @@ namespace DotaPublicDataLoaderHost
                 var webProxy = new WebProxy(host, port);
                 var webClient = new WebClient
                 {
-                    //Proxy = webProxy
+                    Proxy = webProxy
                 };
                 var json = webClient.DownloadString(url);
                 var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);
+                if (matchHistory.result.status == 2)
+                {
+                    return null;
+                }
+
                 return matchHistory.result.matches ?? new List<MatchDetails>();
             }
             catch (WebException e)
