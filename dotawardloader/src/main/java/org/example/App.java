@@ -13,14 +13,10 @@ import skadistats.clarity.model.Entity;
 import skadistats.clarity.model.FieldPath;
 import skadistats.clarity.processor.entities.OnEntityCreated;
 import skadistats.clarity.processor.entities.OnEntityUpdated;
-import skadistats.clarity.processor.packet.UsesPacketReader;
 import skadistats.clarity.processor.runner.Context;
-import skadistats.clarity.processor.runner.SimpleRunner;
 import skadistats.clarity.source.InputStreamSource;
 import skadistats.clarity.source.Source;
 
-import javax.vecmath.Vector2f;
-import javax.vecmath.Vector3f;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -44,6 +40,9 @@ public class App {
         result.x = X;
         result.y = Y;
 
+        result.xf = getX(e, X);
+        result.yf = getY(e, Y);
+
         final MatchWardResult matchWardResult = _results.get(playerIndex);
         matchWardResult.radiant = playerIndex < 5;
         matchWardResult.results.add(result);
@@ -60,6 +59,9 @@ public class App {
         result.x = X;
         result.y = Y;
 
+        result.xf = getX(e, X);
+        result.yf = getY(e, Y);
+
         final MatchWardResult matchWardResult = _results.get(playerIndex);
         matchWardResult.radiant = playerIndex < 5;
         matchWardResult.results.add(result);
@@ -68,7 +70,7 @@ public class App {
     @OnEntityUpdated(classPattern = "CDOTAGamerulesProxy")
     public void onGameRulesProxyUpdate(Context context, Entity e, FieldPath[] fieldPaths, int num) {
         time = getRealGameTimeSeconds(e);
-        if(time!=null && time>120)
+        if (time != null && time > 120)
             _runner.stop();
     }
 
@@ -91,22 +93,19 @@ public class App {
         return gameTime - (float) gameRulesProxyEntity.getProperty("m_pGameRules.m_flStateTransitionTime");
     }
 
-    public static float getVecOrigin(Entity e, int idx) {
-        Object v = e.getProperty("m_vecOrigin");
-        if (v instanceof Vector2f) {
-            float[] v2 = new float[2];
-            ((Vector2f) v).get(v2);
-            return v2[idx];
-        } else if (v instanceof Vector3f) {
-            float[] v3 = new float[3];
-            ((Vector3f) v).get(v3);
-            return v3[idx];
-        } else {
-            throw new RuntimeException("unsupported vector found");
-        }
+    public static float getVecOrigin(Entity e, String n) {
+        return e.getProperty("CBodyComponent.m_vec" + n);
     }
 
-    public static final int MAX_COORD_INTEGER = 16384;
+    public static double getX(Entity e, int X) {
+
+        return X * 128.0 + getVecOrigin(e, "X");
+    }
+
+    public static double getY(Entity e, int Y) {
+        return (Y * -128.0) - getVecOrigin(e, "Y") + 32768.0;
+    }
+
 
     @org.jetbrains.annotations.NotNull
     private static List<MatchWardResult> ProcessMatch(Match match) throws IOException, CompressorException, InterruptedException {
@@ -151,7 +150,7 @@ public class App {
                 try {
                     Gson g = new Gson();
                     final Document mongoMatch = matches.find().limit(1).first();
-                    if(mongoMatch == null){
+                    if (mongoMatch == null) {
                         System.out.println("no matches");
                         Thread.sleep(5100);
                         continue;
@@ -160,7 +159,7 @@ public class App {
                     Match p = g.fromJson(json, Match.class);
                     final List<MatchWardResult> matchWardResults = ProcessMatch(p);
                     for (MatchWardResult result : matchWardResults) {
-                        if(result.results.stream().count() == 0)
+                        if (result.results.stream().count() == 0)
                             continue;
                         final String jsonResult = g.toJson(result);
                         Document dbObject = Document.parse(jsonResult);
@@ -172,7 +171,5 @@ public class App {
                 }
             }
         }
-
-
     }
 }
