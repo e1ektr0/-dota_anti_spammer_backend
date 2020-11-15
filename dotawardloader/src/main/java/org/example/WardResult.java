@@ -5,6 +5,6 @@ public class WardResult {
     public int time;
     public int x;
     public int y;
-    public double xf;
-    public double yf;
+    public double vecx;
+    public double vecy;
 }
