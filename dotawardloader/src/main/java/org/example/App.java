@@ -59,8 +59,8 @@ public class App {
         result.x = X;
         result.y = Y;
 
-        result.vecx = getX(e, X);
-        result.vecy = getY(e, Y);
+        result.vecx = getVecOrigin(e, "X");
+        result.vecy = getVecOrigin(e, "Y");
 
         final MatchWardResult matchWardResult = _results.get(playerIndex);
         matchWardResult.radiant = playerIndex < 5;
