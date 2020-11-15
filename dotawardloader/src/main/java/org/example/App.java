@@ -13,7 +13,9 @@ import skadistats.clarity.model.Entity;
 import skadistats.clarity.model.FieldPath;
 import skadistats.clarity.processor.entities.OnEntityCreated;
 import skadistats.clarity.processor.entities.OnEntityUpdated;
+import skadistats.clarity.processor.packet.UsesPacketReader;
 import skadistats.clarity.processor.runner.Context;
+import skadistats.clarity.processor.runner.SimpleRunner;
 import skadistats.clarity.source.InputStreamSource;
 import skadistats.clarity.source.Source;
 
@@ -152,6 +154,7 @@ public class App {
                     if(mongoMatch == null){
                         System.out.println("no matches");
                         Thread.sleep(5100);
+                        continue;
                     }
                     final String json = mongoMatch.toJson();
                     Match p = g.fromJson(json, Match.class);
