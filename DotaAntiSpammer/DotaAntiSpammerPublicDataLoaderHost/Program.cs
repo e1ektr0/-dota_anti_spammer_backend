@@ -76,7 +76,7 @@ namespace DotaPublicDataLoaderHost
 
                 var max = matches.Max(n => n.start_time + n.durtaion);
                 var utcDateTime = DateTimeOffset.FromUnixTimeSeconds((long) max).UtcDateTime;
-                if (DateTime.UtcNow - utcDateTime < TimeSpan.FromMinutes(5))
+                if (DateTime.UtcNow - utcDateTime < TimeSpan.FromMinutes(30))
                 {
                     Thread.Sleep(30000);
                     Console.WriteLine("sleep");
@@ -133,7 +133,7 @@ namespace DotaPublicDataLoaderHost
                 var webProxy = new WebProxy(host, port);
                 var webClient = new WebClient
                 {
-                    Proxy = webProxy
+                   // Proxy = webProxy
                 };
                 var json = webClient.DownloadString(url);
                 var matchHistory = JsonSerializer.Deserialize<MatchHistoryBySequenceNum>(json);

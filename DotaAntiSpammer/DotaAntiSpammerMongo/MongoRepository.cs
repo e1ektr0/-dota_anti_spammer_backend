@@ -16,6 +16,7 @@ namespace DotaAntiSpammerMongo
         private const string ConfigCollectionName = "config";
         private const string ResultsCollectionName = "results";
         private const string PlayerAccountsCollectionName = "player_accounts";
+        private const string WardResultCollectionName = "ward_results";
         private const string MatchesAnalyzeCollectionName = "matches_analyze";
         private readonly IMongoDatabase _database;
         private readonly Config _config;
@@ -120,7 +121,7 @@ namespace DotaAntiSpammerMongo
         public List<PlayerResult> GetResultsByMatch(ulong matchId)
         {
             var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
-            var stringFilter = "{ match_id: " + matchId +  " }";
+            var stringFilter = "{ match_id: " + matchId + " }";
             var resultsByHeroId = collection.Find(stringFilter).ToList()
                 .Select(n => BsonSerializer.Deserialize<PlayerResult>(n)).ToList();
             return resultsByHeroId;
@@ -151,7 +152,7 @@ namespace DotaAntiSpammerMongo
             var results = list.Select(n => BsonSerializer.Deserialize<PlayerAccountMongo>(n));
             return results;
         }
-        
+
 
         public void UpdateResult(Player player, ulong max)
         {
@@ -178,6 +179,15 @@ namespace DotaAntiSpammerMongo
             return resultsByHeroId;
         }
 
+        public List<WardResultsMongo> GetWards(string accounts, bool radiant)
+        {
+            var collection = _database.GetCollection<BsonDocument>(WardResultCollectionName);
+            var stringFilter = "{ account_id: { $in: [" + accounts + "] }, radiant:" + radiant + " }";
+            var results = collection.Find(stringFilter).ToList()
+                .Select(n => BsonSerializer.Deserialize<WardResultsMongo>(n)).ToList();
+            return results;
+        }
+
 
         public List<PlayerAccountMongo> GetProfiles(string accounts)
         {
@@ -192,8 +202,10 @@ namespace DotaAntiSpammerMongo
             if (!_baseAccountsListLoaded)
                 return null;
 
-            var stringFilter = "{ $and:[{account_id: { $in: [" + accounts + "] }}, {$or: [{'stats.rank': null}, {'stats.rank': {$gt:69}}]}]  }";
-            var profiles = collection.Find(stringFilter).ToList().Select(n=>BsonSerializer.Deserialize<PlayerAccountMongo>(n)).ToList();
+            var stringFilter = "{ $and:[{account_id: { $in: [" + accounts +
+                               "] }}, {$or: [{'stats.rank': null}, {'stats.rank': {$gt:69}}]}]  }";
+            var profiles = collection.Find(stringFilter).ToList()
+                .Select(n => BsonSerializer.Deserialize<PlayerAccountMongo>(n)).ToList();
             return profiles;
         }
     }

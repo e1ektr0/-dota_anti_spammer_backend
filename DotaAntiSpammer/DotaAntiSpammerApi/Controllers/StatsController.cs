@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DotaAntiSpammerCommon.Models;
 using DotaAntiSpammerMongo;
-using DotaAntiSpammerMongo.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotaAntiSpammerApi.Controllers
@@ -19,20 +19,47 @@ namespace DotaAntiSpammerApi.Controllers
         }
 
         [HttpGet]
-        public Match Get(string accounts, long currentId)
+        public Match Get(string accounts, long currentId, bool includeWards = false)
         {
             //todo: accounts sql inj
             var results = _repository.GetPlayers(accounts);
 
             var result = new Match
             {
-                Players = results.Select(n=>n.stats).Where(n=>n != null).ToList()
+                Players = results.Select(n => n.stats).Where(n => n != null).ToList()
             };
+
+            if (!includeWards)
+                return result;
+
+            var accountsSplit = accounts.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            var indexOf = accountsSplit.IndexOf(currentId.ToString());
+            if (indexOf == -1)
+                return result;
+
+            var radiant = (indexOf < 5);
+            var enemyAccounts = string.Join(',', radiant ? accountsSplit.Take(5) : accountsSplit.Skip(5).Take(5));
+
+            var wardResultsMongos = _repository.GetWards(enemyAccounts, !radiant);
+            foreach (var player in result.Players)
+            {
+                player.WardResults = wardResultsMongos.Where(n => n.account_id == player.AccountId)
+                    .SelectMany(n => n.results.Select(x => new WardPlaced
+                    {
+                        Obs = x.Obs,
+                        Time = x.Time,
+                        X = x.X,
+                        Y = x.Y,
+                        VecX = x.vecx,
+                        VecY = x.vecy,
+                        HeroId = n.hero_id
+                    })).ToList();
+            }
 
             return result;
         }
 
-      
+
         [HttpGet]
         [Route("default")]
         public Match GetDefault()
