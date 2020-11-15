@@ -23,10 +23,10 @@ namespace DotaAntiSpammerMongo.Models
 
     public class WardResult
     {
-        public bool Obs { get; set; }
-        public int Time { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
+        public bool obs { get; set; }
+        public int time { get; set; }
+        public int x { get; set; }
+        public int y { get; set; }
         public double vecx { get; set; }
         public double vecy { get; set; }
     }

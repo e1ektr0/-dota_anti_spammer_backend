@@ -182,7 +182,7 @@ namespace DotaAntiSpammerMongo
         public List<WardResultsMongo> GetWards(string accounts, bool radiant)
         {
             var collection = _database.GetCollection<BsonDocument>(WardResultCollectionName);
-            var stringFilter = "{ account_id: { $in: [" + accounts + "] }, radiant:" + radiant + " }";
+            var stringFilter = "{ account_id: { $in: [" + accounts + "] }, radiant:" + radiant.ToString().ToLower() + " }";
             var results = collection.Find(stringFilter).ToList()
                 .Select(n => BsonSerializer.Deserialize<WardResultsMongo>(n)).ToList();
             return results;

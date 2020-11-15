@@ -38,7 +38,7 @@ namespace DotaAntiSpammerApi.Controllers
                 return result;
 
             var radiant = (indexOf < 5);
-            var enemyAccounts = string.Join(',', radiant ? accountsSplit.Take(5) : accountsSplit.Skip(5).Take(5));
+            var enemyAccounts = string.Join(',', !radiant ? accountsSplit.Take(5) : accountsSplit.Skip(5).Take(5));
 
             var wardResultsMongos = _repository.GetWards(enemyAccounts, !radiant);
             foreach (var player in result.Players)
@@ -46,10 +46,10 @@ namespace DotaAntiSpammerApi.Controllers
                 player.WardResults = wardResultsMongos.Where(n => n.account_id == player.AccountId)
                     .SelectMany(n => n.results.Select(x => new WardPlaced
                     {
-                        Obs = x.Obs,
-                        Time = x.Time,
-                        X = x.X,
-                        Y = x.Y,
+                        Obs = x.obs,
+                        Time = x.time,
+                        X = x.x,
+                        Y = x.y,
                         VecX = x.vecx,
                         VecY = x.vecy,
                         HeroId = n.hero_id
