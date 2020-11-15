@@ -106,18 +106,6 @@ public class App {
 
     public static final int MAX_COORD_INTEGER = 16384;
 
-    public static float getX(Entity e) {
-        int cellBits = 7;
-        int cellX = e.getProperty("m_cellX");
-        return cellX * (1 << cellBits) - MAX_COORD_INTEGER + getVecOrigin(e, 0) / 128.0f;
-    }
-
-    public static float getY(Entity e) {
-        int cellBits = 7;
-        int cellY = e.getProperty("m_cellY");
-        return cellY * (1 << cellBits) - MAX_COORD_INTEGER + getVecOrigin(e, 1) / 128.0f;
-    }
-
     @org.jetbrains.annotations.NotNull
     private static List<MatchWardResult> ProcessMatch(Match match) throws IOException, CompressorException, InterruptedException {
         time = 0f;
@@ -161,10 +149,16 @@ public class App {
                 try {
                     Gson g = new Gson();
                     final Document mongoMatch = matches.find().limit(1).first();
+                    if(mongoMatch == null){
+                        System.out.println("no matches");
+                        Thread.sleep(5100);
+                    }
                     final String json = mongoMatch.toJson();
                     Match p = g.fromJson(json, Match.class);
                     final List<MatchWardResult> matchWardResults = ProcessMatch(p);
                     for (MatchWardResult result : matchWardResults) {
+                        if(result.results.stream().count() == 0)
+                            continue;
                         final String jsonResult = g.toJson(result);
                         Document dbObject = Document.parse(jsonResult);
                         ward_results.insertOne(dbObject);
