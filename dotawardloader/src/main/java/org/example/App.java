@@ -14,11 +14,9 @@ import skadistats.clarity.model.FieldPath;
 import skadistats.clarity.processor.entities.OnEntityCreated;
 import skadistats.clarity.processor.entities.OnEntityUpdated;
 import skadistats.clarity.processor.runner.Context;
-import skadistats.clarity.processor.runner.SimpleRunner;
 import skadistats.clarity.source.InputStreamSource;
 import skadistats.clarity.source.Source;
 
-import javax.print.Doc;
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
 import java.io.BufferedInputStream;
@@ -27,16 +25,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Hello world!
- */
 public class App {
 
     private static List<MatchWardResult> _results;
-    private Float time;
+    private static Float time = 0f;
+    private static CustomRunner _runner;
 
     @OnEntityCreated(classPattern = "CDOTA_Hero_.*|CDOTA_NPC_Observer_Ward")
-    public void onEntityCreated(Context ctx, Entity e) {
+    public void onEntityCreated2(Context ctx, Entity e) {
         Integer playerIndex = e.getProperty("m_nPlayerOwnerID");
         Integer X = e.getProperty("CBodyComponent.m_cellX");
         Integer Y = e.getProperty("CBodyComponent.m_cellY");
@@ -51,9 +47,27 @@ public class App {
         matchWardResult.results.add(result);
     }
 
+    @OnEntityCreated(classPattern = "CDOTA_Hero_.*|CDOTA_NPC_Observer_Ward_TrueSight")
+    public void onEntityCreated(Context ctx, Entity e) {
+        Integer playerIndex = e.getProperty("m_nPlayerOwnerID");
+        Integer X = e.getProperty("CBodyComponent.m_cellX");
+        Integer Y = e.getProperty("CBodyComponent.m_cellY");
+        final WardResult result = new WardResult();
+        result.time = Math.round(time);
+        result.obs = false;
+        result.x = X;
+        result.y = Y;
+
+        final MatchWardResult matchWardResult = _results.get(playerIndex);
+        matchWardResult.radiant = playerIndex < 5;
+        matchWardResult.results.add(result);
+    }
+
     @OnEntityUpdated(classPattern = "CDOTAGamerulesProxy")
     public void onGameRulesProxyUpdate(Context context, Entity e, FieldPath[] fieldPaths, int num) {
         time = getRealGameTimeSeconds(e);
+        if(time!=null && time>120)
+            _runner.stop();
     }
 
     public static Float getRealGameTimeSeconds(Entity gameRulesProxyEntity) {
@@ -105,7 +119,8 @@ public class App {
     }
 
     @org.jetbrains.annotations.NotNull
-    private static List<MatchWardResult> ProcessMatch(Match match) throws IOException, CompressorException {
+    private static List<MatchWardResult> ProcessMatch(Match match) throws IOException, CompressorException, InterruptedException {
+        time = 0f;
         System.out.println("start " + match.match_id);
         _results = match.players.stream().map(x -> {
             final MatchWardResult matchWardResult = new MatchWardResult();
@@ -119,11 +134,12 @@ public class App {
         // 1) create an input source from the replay
         Source source = new InputStreamSource(input);
         // 2) create a simple runner that will read the replay once
-        SimpleRunner runner = new SimpleRunner(source);
+        _runner = new CustomRunner(source);
         // 3) create an instance of your processor
         App processor = new App();
         // 4) and hand it over to the runner
-        runner.runWith(processor);
+        _runner.runWith(processor);
+
         System.out.println("done " + match.match_id);
         return _results;
     }
@@ -148,7 +164,7 @@ public class App {
                     final String json = mongoMatch.toJson();
                     Match p = g.fromJson(json, Match.class);
                     final List<MatchWardResult> matchWardResults = ProcessMatch(p);
-                    for (MatchWardResult result: matchWardResults) {
+                    for (MatchWardResult result : matchWardResults) {
                         final String jsonResult = g.toJson(result);
                         Document dbObject = Document.parse(jsonResult);
                         ward_results.insertOne(dbObject);
@@ -159,7 +175,7 @@ public class App {
                 }
             }
         }
-        //ProcessMatch();
-        //System.out.println("done");
+
+
     }
 }
