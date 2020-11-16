@@ -166,7 +166,7 @@ public class App {
         return input;
     }
 
-    public static void main(String[] args) throws IOException, CompressorException {
+    public static void main(String[] args) throws IOException, CompressorException, InterruptedException {
         try (MongoClient mongoClient = MongoClients.create("mongodb://e1ekt0:secretPassword@194.87.103.72:27017/?authSource=dota2&readPreference=primary&appname=MongoDB%20Compass&ssl=false")) {
             final MongoDatabase db = mongoClient.getDatabase("dota2");
             final MongoCollection<Document> matches = db.getCollection("matches_analyze");
@@ -193,6 +193,7 @@ public class App {
                     matches.deleteOne(mongoMatch);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Thread.sleep(5*1000);
                 }
             }
         }
