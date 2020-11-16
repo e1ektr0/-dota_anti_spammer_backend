@@ -7,4 +7,5 @@ public class WardResult {
     public int y;
     public double vecx;
     public double vecy;
+    public boolean mine;
 }

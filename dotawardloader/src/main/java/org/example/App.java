@@ -28,9 +28,12 @@ public class App {
     private static List<MatchWardResult> _results;
     private static Float time = 0f;
     private static CustomRunner _runner;
+    private static boolean _withTechies;
 
     @OnEntityCreated(classPattern = "CDOTA_Hero_.*|CDOTA_NPC_Observer_Ward")
-    public void onEntityCreated2(Context ctx, Entity e) {
+    public void onObs(Context ctx, Entity e) {
+        if (time != null && time > 120)
+            return;
         Integer playerIndex = e.getProperty("m_nPlayerOwnerID");
         Integer X = e.getProperty("CBodyComponent.m_cellX");
         Integer Y = e.getProperty("CBodyComponent.m_cellY");
@@ -49,7 +52,9 @@ public class App {
     }
 
     @OnEntityCreated(classPattern = "CDOTA_Hero_.*|CDOTA_NPC_Observer_Ward_TrueSight")
-    public void onEntityCreated(Context ctx, Entity e) {
+    public void onSentry(Context ctx, Entity e) {
+        if (time != null && time > 120)
+            return;
         Integer playerIndex = e.getProperty("m_nPlayerOwnerID");
         Integer X = e.getProperty("CBodyComponent.m_cellX");
         Integer Y = e.getProperty("CBodyComponent.m_cellY");
@@ -66,11 +71,30 @@ public class App {
         matchWardResult.radiant = playerIndex < 5;
         matchWardResult.results.add(result);
     }
+    @OnEntityCreated(classPattern = "CDOTA_Hero_.*|CDOTA_NPC_TechiesMines")
+    public void onMine(Context ctx, Entity e) {
+        Integer playerIndex = e.getProperty("m_nPlayerOwnerID");
+        Integer X = e.getProperty("CBodyComponent.m_cellX");
+        Integer Y = e.getProperty("CBodyComponent.m_cellY");
+        final WardResult result = new WardResult();
+        result.time = Math.round(time);
+        result.obs = false;
+        result.mine = true;
+        result.x = X;
+        result.y = Y;
+
+        result.vecx = getVecOrigin(e, "X");
+        result.vecy = getVecOrigin(e, "Y");
+
+        final MatchWardResult matchWardResult = _results.get(playerIndex);
+        matchWardResult.radiant = playerIndex < 5;
+        matchWardResult.results.add(result);
+    }
 
     @OnEntityUpdated(classPattern = "CDOTAGamerulesProxy")
     public void onGameRulesProxyUpdate(Context context, Entity e, FieldPath[] fieldPaths, int num) {
         time = getRealGameTimeSeconds(e);
-        if (time != null && time > 120)
+        if (time != null && time > 120 && !_withTechies)
             _runner.stop();
     }
 
@@ -119,6 +143,7 @@ public class App {
             return matchWardResult;
         }).collect(Collectors.toList());
 
+        _withTechies  = match.players.stream().anyMatch(n->n.hero_id == 105);
         CompressorInputStream input = getBufferedReaderForCompressedFile(match.match_id, match.replay_salt, match.cluster);
         // 1) create an input source from the replay
         Source source = new InputStreamSource(input);
