@@ -26,6 +26,7 @@ namespace DotaAntiSpammerAnalyzer
                 }
 
                 Console.WriteLine("done "+allAccountId.Count);
+
                 Thread.Sleep(1000);
             }
             

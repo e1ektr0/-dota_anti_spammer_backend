@@ -10,6 +10,5 @@ namespace DotaAntiSpammerCommon.Models
         public decimal WinRate { get; set; }
         public List<Hero> Heroes { get; set; }
         public List<long> Party { get; set; }
-        public List<WardPlaced> WardResults { get; set; }
     }
 }

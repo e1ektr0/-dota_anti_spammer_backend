@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using DotaAntiSpammerCommon.Models;
 using DotaAntiSpammerMongo;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +21,15 @@ namespace DotaAntiSpammerApi.Controllers
         }
 
         [HttpGet]
-        public Match Get(string accounts, long currentId, bool includeWards = false)
+        public Match Get(string accounts, long currentId)
         {
-            //todo: accounts sql inj
+            var enumerable = accounts.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(long.Parse).ToList();
+            if (enumerable.Count != 10)
+            {
+                return null;
+            }
+
             var results = _repository.GetPlayers(accounts);
 
             var result = new Match
@@ -29,36 +37,35 @@ namespace DotaAntiSpammerApi.Controllers
                 Players = results.Select(n => n.stats).Where(n => n != null).ToList()
             };
 
-            if (!includeWards)
-                return result;
-
-            var accountsSplit = accounts.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
-            var indexOf = accountsSplit.IndexOf(currentId.ToString());
-            if (indexOf == -1)
-                return result;
-
-            var radiant = (indexOf < 5);
-            var enemyAccounts = string.Join(',', !radiant ? accountsSplit.Take(5) : accountsSplit.Skip(5).Take(5));
-
-            var wardResultsMongos = _repository.GetWards(enemyAccounts, !radiant);
-            foreach (var player in result.Players)
-            {
-                player.WardResults = wardResultsMongos.Where(n => n.account_id == player.AccountId)
-                    .SelectMany(n => n.results.Select(x => new WardPlaced
-                    {
-                        Obs = x.obs,
-                        Time = x.time,
-                        X = x.x,
-                        Y = x.y,
-                        VecX = x.vecx,
-                        VecY = x.vecy,
-                        HeroId = n.hero_id
-                    })).ToList();
-            }
-
             return result;
         }
 
+        [HttpPost("Wards")]
+        public List<PlayerWards> Wards(long currentId, [FromBody] List<PlayerPick> picks)
+        {
+//            var list = _repository.GetWards(105, true)
+//                .GroupBy(n=>n.account_id).Select(n=>new {n.Key, c =n.Count()}).OrderByDescending(n=>n.c).ToList().FirstOrDefault();
+            var result = picks.Select(n => new PlayerWards
+            {
+                Wards = _repository.GetWards(n.AccountId, n.HeroId, n.Radiant)
+                    .SelectMany(x => x.results.Select(u =>
+                        new WardPlaced
+                        {
+                            Obs = u.obs,
+                            Time = u.time,
+                            X = u.x,
+                            Y = u.y,
+                            VecX = u.vecx,
+                            VecY = u.vecy,
+                            Mine = u.mine,
+                            MatchId = x.match_id
+                        })).ToList(),
+                AccountId = n.AccountId,
+                HeroId = n.HeroId
+            }).ToList();
+
+            return result;
+        }
 
         [HttpGet]
         [Route("default")]
@@ -104,6 +111,47 @@ namespace DotaAntiSpammerApi.Controllers
             var results = _repository.GetResultsByAccountId(accountId, heroId);
 
             return results.Select(n => "https://www.dotabuff.com/matches/" + n.match_id).ToList();
+        }
+
+        [HttpGet]
+        [Route("player")]
+        public string GetMatches(int accountId)
+        {
+            var results = _repository.GetResultsByAccountId(accountId);
+
+            var matches = results.OrderByDescending(n => n.startTime).Select(n =>
+                DateTimeOffset.FromUnixTimeSeconds((long) n.startTime).ToString("g") +
+                (n.win ? " win " : " lose ") + HeroConfigAll.Instance.Heroes.First(x => x.Id == n.hero_id).Name +
+                " https://www.dotabuff.com/matches/" + n.match_id + "\r\n").ToList();
+            return string.Join(Environment.NewLine, matches);
+        }
+    }
+
+    public class HeroConfig
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string LocalName { get; set; }
+    }
+
+    public class HeroConfigAll
+    {
+        private static HeroConfigAll _instance;
+        public List<HeroConfig> Heroes { get; set; }
+
+        public static HeroConfigAll Instance
+        {
+            get
+            {
+                if (_instance != null)
+                    return _instance;
+                var readAllText = File.ReadAllText("heroes.txt");
+                _instance = JsonSerializer.Deserialize<HeroConfigAll>(readAllText, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                return _instance;
+            }
         }
     }
 }

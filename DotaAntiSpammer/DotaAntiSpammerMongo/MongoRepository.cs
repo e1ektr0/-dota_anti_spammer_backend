@@ -147,7 +147,7 @@ namespace DotaAntiSpammerMongo
         {
             var collection = _database.GetCollection<BsonDocument>(PlayerAccountsCollectionName);
             var filter = "{ '$expr': { '$ne': ['$processed_match_seq_num', '$last_match_seq_num'] } } ";
-            var list = collection.Find(filter)
+            var list = collection.Find(filter).Limit(10000)
                 .ToList();
             var results = list.Select(n => BsonSerializer.Deserialize<PlayerAccountMongo>(n));
             return results;
@@ -179,15 +179,25 @@ namespace DotaAntiSpammerMongo
             return resultsByHeroId;
         }
 
-        public List<WardResultsMongo> GetWards(string accounts, bool radiant)
+        public List<WardResultsMongo> GetWards(int heroId, bool radiant)
         {
             var collection = _database.GetCollection<BsonDocument>(WardResultCollectionName);
-            var stringFilter = "{ account_id: { $in: [" + accounts + "] }, radiant:" + radiant.ToString().ToLower() + " }";
+            var stringFilter = "{ hero_id:" + heroId + " radiant:" +
+                               radiant.ToString().ToLower() +" }";
             var results = collection.Find(stringFilter).ToList()
                 .Select(n => BsonSerializer.Deserialize<WardResultsMongo>(n)).ToList();
             return results;
         }
 
+        public List<WardResultsMongo> GetWards(long accountId, int heroId, bool radiant)
+        {
+            var collection = _database.GetCollection<BsonDocument>(WardResultCollectionName);
+            var stringFilter = "{ account_id: " + accountId + ",hero_id:" + heroId + " radiant:" +
+                               radiant.ToString().ToLower() +" }";
+            var results = collection.Find(stringFilter).ToList()
+                .Select(n => BsonSerializer.Deserialize<WardResultsMongo>(n)).ToList();
+            return results;
+        }
 
         public List<PlayerAccountMongo> GetProfiles(string accounts)
         {
