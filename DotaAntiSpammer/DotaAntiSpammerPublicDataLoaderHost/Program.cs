@@ -76,7 +76,7 @@ namespace DotaPublicDataLoaderHost
 
                 var max = matches.Max(n => n.start_time + n.durtaion);
                 var utcDateTime = DateTimeOffset.FromUnixTimeSeconds((long) max).UtcDateTime;
-                if (DateTime.UtcNow - utcDateTime < TimeSpan.FromMinutes(30))
+                if (DateTime.UtcNow - utcDateTime < TimeSpan.FromMinutes(60))
                 {
                     Thread.Sleep(30000);
                     Console.WriteLine("sleep");
