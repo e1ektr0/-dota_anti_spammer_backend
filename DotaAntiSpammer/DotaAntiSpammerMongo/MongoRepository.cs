@@ -218,5 +218,14 @@ namespace DotaAntiSpammerMongo
                 .Select(n => BsonSerializer.Deserialize<PlayerAccountMongo>(n)).ToList();
             return profiles;
         }
+
+        public void RemoveResult(List<PlayerResult> toList)
+        {
+            foreach (var playerResult in toList)
+            {
+                var collection = _database.GetCollection<BsonDocument>(ResultsCollectionName);
+                collection.DeleteOne(Builders<BsonDocument>.Filter.Eq("_id", playerResult._id));
+            }
+        }
     }
 }

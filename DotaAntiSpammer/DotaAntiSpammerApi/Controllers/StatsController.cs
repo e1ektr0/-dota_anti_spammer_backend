@@ -25,10 +25,6 @@ namespace DotaAntiSpammerApi.Controllers
         {
             var enumerable = accounts.Split(",", StringSplitOptions.RemoveEmptyEntries)
                 .Select(long.Parse).ToList();
-            if (enumerable.Count != 10)
-            {
-                return null;
-            }
 
             var results = _repository.GetPlayers(accounts);
 
