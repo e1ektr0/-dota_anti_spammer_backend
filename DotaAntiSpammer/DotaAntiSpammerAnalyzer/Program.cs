@@ -26,7 +26,7 @@ namespace DotaAntiSpammerAnalyzer
                         playerResults = filterByDate;
                     var calculate = Calculator.Calculate(acc.account_id, playerResults);
                     calculate.rank = acc.stats?.rank;
-                    mongoRepository.UpdateResult(calculate, playerResults.Max(n => n.match_seq_num));
+                    mongoRepository.UpdateResult(calculate, acc.last_match_seq_num);
                     if (filterByDate.Count > 100)
                         mongoRepository.RemoveResult(playerResults.Where(n =>
                                 DateTimeOffset.FromUnixTimeSeconds((long) n.startTime).ToUniversalTime() < startTime)
